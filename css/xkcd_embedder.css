@@ -3,5 +3,11 @@
 	border: 1px solid gray;
 	padding:5px;
 	margin: 5px;
-	background-color: rgba(0,0,0,0.1);
+	background-color: rgba(100,100,0,0.2);
+}
+.xkcd-embed-title {
+	font-weight: bold;
+	font-family: Monospace;
+	font-size: 14px;
+	padding-bottom:5px;
 }

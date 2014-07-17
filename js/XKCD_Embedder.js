@@ -8,11 +8,12 @@ var XKCD = function(element, serverURL) {
 	//LOAD the XKCD
 	XKCD_Embedder.getJSON(this.url, function(data) {
 		console.log(data, data.img);
-		self.element.innerHTML = "<img src='"+data.img+"' title=\""+data.alt+"\"></img>";
+		self.element.innerHTML += "<div class='xkcd-embed-title'>"+data.title+"</div>";
+		self.element.innerHTML += "<div class='xkcd-embed-comic'><img src='"+data.img+"' title=\""+data.alt+"\"></img></div>";
+		// self.element.innerHTML += "<div class='xkcd-embed-alt'>"+data.alt+"</div>";
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
 	});
-
 };
 
 var XKCD_Embedder = function(serverURL) {
