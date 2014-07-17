@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 require 'nokogiri'
 require 'open-uri'
@@ -9,14 +10,17 @@ class XKCDScraper
 	@@base = 'http://xkcd.com'
 
 	@@redis = nil
-	begin
-		@@redis = Redis.new
-		@@redis.ping
-	rescue
-		@@redis = nil
-	end
+	
 
-	def initialize
+	def initialize(cache = true)
+		if(cache)
+			begin
+				@@redis = Redis.new
+				@@redis.ping
+			rescue
+				@@redis = nil
+			end
+		end
 	end
 
 	# takes id, random, latest
@@ -33,12 +37,12 @@ class XKCDScraper
 
 	def getRandom
 		latest = getLatest()
-		rid = rand(1 .. latest[:id])
+		rid = rand(1 .. latest['num'])
 		return getID(rid)
 	end
 
 	def getLatest
-		getData(@@base)
+		return getData(@@base)
 	end
 
 	def getID(id)
@@ -71,39 +75,48 @@ class XKCDScraper
 	private
 
 	def getData(url)
+		infoUrl = url + '/info.0.json'
+		hash = JSON.parse(open(infoUrl).read)
+		hash.delete("transcript")
+		return hash
+	end
+
+	#
+	# No longer used
+	#
+	def scrapeData(url) 
 		page = Nokogiri::HTML(open(url))
 
 		id = 0
-		title = nil
 		comic = nil
 
-		page.css('#comic img').each do |img|
-			comic = img.attr('src').to_s
-			title = img.attr('title').to_s
-			break
+		img = page.css('#comic img').first
+		alt = img.attr('title').to_s
+		img = img.to_s
+
+		title = page.css('#ctitle').text.to_s
+
+		navPrev = page.css('.comicNav a[rel="prev"]').first
+		if(navPrev.attr('href') =~ /(\d+)/)
+			id = $1.to_i + 1
+		else
+			id = 1
 		end
 
-		page.css('.comicNav a[rel="prev"]').each do |prev|
-			href = prev.attr('href')
-			if(href =~ /(\d+)/)
-				id = $1.to_i + 1
-			else
-				id = 1
-			end
-			break
-		end
-
-		return {:title => title, :comic => comic, :id => id}
+		return {:alt => alt, :img => img, :num => id, :title => title}
 	end
 end
 
-xkcdScraper = XKCDScraper.new
+xkcdScraper = XKCDScraper.new(true)
+
+if ARGV[0]
+	puts "\n\n__Testing comic '#{ARGV[0]}'__\n"
+	puts xkcdScraper.fetch(ARGV[0])
+end
+
 
 # puts "\n\n__Testing comic 1__\n"
 # p xkcdScraper.fetch(1)
-
-puts "\n\n__Testing comic 338__\n"
-p xkcdScraper.fetch(338)
 
 # puts "\n\n__Testing comic random__\n"
 # p xkcdScraper.fetch(:random)

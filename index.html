@@ -7,6 +7,10 @@
 
 		$(function() {
 			console.log('ready!');
+			// $.get('http://xkcd.com/255/info.0.json', function(data) {
+			$.get('http://localhost:4567/255', function(data) {
+				console.log(data);
+			});
 		});
 	</script>
 </head>
