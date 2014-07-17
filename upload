@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+rsync -e "ssh" -avrzu --exclude '.git' --delete ./ root@lsd:/var/www/xkcd-embedder
