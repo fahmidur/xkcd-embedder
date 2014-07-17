@@ -1,0 +1,7 @@
+.xkcd-embed {
+	display: inline-block;
+	border: 1px solid gray;
+	padding:5px;
+	margin: 5px;
+	background-color: rgba(0,0,0,0.1);
+}
