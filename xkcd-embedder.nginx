@@ -1,0 +1,12 @@
+upstream backend {
+    server 127.0.0.1:4567;
+}
+server {
+	listen 80;
+	server_name xkcd-embedder.fahmidur.us;
+	charset UTF-8;
+
+	location / {
+		proxy_pass http://backend;
+	}
+}
