@@ -23,6 +23,7 @@ var XKCD = function(element, serverURL) {
 		var number = document.createElement('span');
 		number.className = 'xkcd-embed-number';
 		number.textContent = data.num;
+		number.style.opacity = 0.5;
 		top.appendChild(number);
 
 		var imgWrapper = document.createElement('div');
