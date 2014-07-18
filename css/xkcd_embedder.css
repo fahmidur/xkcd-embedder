@@ -3,11 +3,33 @@
 	border: 1px solid gray;
 	padding:5px;
 	margin: 5px;
-	background-color: rgba(100,100,0,0.2);
+	background-color: rgba(100,120,0,0.2);
 }
-.xkcd-embed-title {
+.xkcd-embed-top {
+	display: block;
+}
+a.xkcd-embed-title {
+	display: inline-block;
+	float: left;
 	font-weight: bold;
 	font-family: Monospace;
 	font-size: 14px;
 	padding-bottom:5px;
+	text-decoration: none;
+	color: #222;
+}
+.xkcd-embed-number {
+	float: right;
+	font-family: monospace;
+	font-style: italic;
+}
+.xkcd-embed-number::before {
+	content: '#';
+}
+.xkcd-embed-alt {
+	display:inline-block;
+	font-family: monospace;
+	background-color: rgba(0,0,0,0.8);
+	color: white;
+	padding: 5px;
 }
