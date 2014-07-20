@@ -59,6 +59,11 @@ XKCD.prototype.render = function() {
 		self.element.appendChild(bottom);
 		self.c.bottom = bottom;
 
+		var btEarliest = document.createElement('button');
+		btEarliest.className = 'xkcd-embed-bt xkcd-embed-btEarliest';
+		btEarliest.textContent = "|<";
+		bottom.appendChild(btEarliest);
+
 		var btPrev = document.createElement('button');
 		btPrev.className = 'xkcd-embed-bt xkcd-embed-btPrev';
 		btPrev.textContent = "<";
@@ -74,10 +79,20 @@ XKCD.prototype.render = function() {
 		btNext.textContent = ">";
 		bottom.appendChild(btNext);
 
+		var btLatest = document.createElement('button');
+		btLatest.className = 'xkcd-embed-bt xkcd-embed-btLatest';
+		btLatest.textContent = ">|";
+		bottom.appendChild(btLatest);
+
+		btEarliest.addEventListener('click', function(e) {
+			self.url = self.serverURL + '/1';
+			self.render();
+		});
+
 		btPrev.addEventListener('click', function(e) {
 			if(self.data.num > 1) {
 				self.url = self.serverURL + '/' + (parseInt(self.data.num) - 1);
-				self.render();
+				self.render(); 
 			}
 		});
 
@@ -88,6 +103,11 @@ XKCD.prototype.render = function() {
 
 		btNext.addEventListener('click', function(e) {
 			self.url = self.serverURL + '/' + (parseInt(self.data.num) + 1);
+			self.render();
+		});
+
+		btLatest.addEventListener('click', function(e) {
+			self.url = self.serverURL + '/latest';
 			self.render();
 		});
 

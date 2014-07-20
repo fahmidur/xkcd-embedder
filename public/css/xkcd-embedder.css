@@ -12,6 +12,7 @@
 	display: block;
 	background-color: rgba(120,100,0,0.2);
 	margin-top:5px;
+	text-align: center;
 }
 .xkcd-embed-bt {
 	display: inline-block;
