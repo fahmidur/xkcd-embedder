@@ -63,6 +63,8 @@ var XKCD = function(element, serverURL) {
 XKCD.count = 0;
 
 var XKCD_Embedder = function(serverURL) {
+	//insert stylesheet
+	
 	var ar = document.querySelectorAll('.xkcd-embed');
 	var xkcds = new Array();
 	for(var i = 0; i < ar. length; ++i) {

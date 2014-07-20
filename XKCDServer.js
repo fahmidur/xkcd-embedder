@@ -95,6 +95,9 @@ function allowAccess(req, res, next) {
 	next();
 };
 
+app.use('/js', allowAccess, express.static(__dirname + '/js'));
+app.use('/css', allowAccess, express.static(__dirname + '/css'));
+
 app.get('/latest', allowAccess, xkcd.getLatest);
 app.get('/random', allowAccess, xkcd.getRandom);
 app.get('/:id(\\d+)', allowAccess, xkcd.getID);
