@@ -8,6 +8,26 @@
 .xkcd-embed-top {
 	display: block;
 }
+.xkcd-embed-bottom {
+	display: block;
+	background-color: rgba(120,100,0,0.2);
+	margin-top:5px;
+}
+.xkcd-embed-bt {
+	display: inline-block;
+	font-family: monospace;
+	background-color: transparent;
+	border:0px solid red;
+	color: #2d2d2d;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	margin:0px;
+}
+.xkcd-embed-bt:hover {
+	background-color: #2d2d2d;
+	color: yellow;
+}
 a.xkcd-embed-title {
 	display: inline-block;
 	float: left;
