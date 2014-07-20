@@ -51,6 +51,7 @@ XKCD.prototype.render = function() {
 		var img = document.createElement('img');
 		img.src = data.img;
 		img.id = 'xkcd-embed-img-'+self.countID;
+		img.title = data.alt;
 		imgWrapper.appendChild(img);
 		self.c.img = img;
 
