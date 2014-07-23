@@ -6,6 +6,9 @@ var XKCD = function(element, serverURL) {
 	this.serverURL = serverURL;
 	this.url = serverURL + '/' + this.dataset.id;
 	this.c = {};
+	this.historyStack = new Array();
+	this.forwardStack = new Array();
+
 	this.render();
 };
 XKCD.prototype.render = function() {
@@ -60,6 +63,13 @@ XKCD.prototype.render = function() {
 		self.element.appendChild(bottom);
 		self.c.bottom = bottom;
 
+		var btBack = document.createElement('button');
+		btBack.className = 'xkcd-embed-bt xkcd-embed-btBack';
+		btBack.textContent = '<-';
+		btBack.title = 'Go Back';
+		bottom.appendChild(btBack);
+
+
 		var btEarliest = document.createElement('button');
 		btEarliest.className = 'xkcd-embed-bt xkcd-embed-btEarliest';
 		btEarliest.textContent = "|<";
@@ -85,12 +95,37 @@ XKCD.prototype.render = function() {
 		btLatest.textContent = ">|";
 		bottom.appendChild(btLatest);
 
+		var btForward = document.createElement('button');
+		btForward.className = 'xkcd-embed-bt xkcd-embed-btForward';
+		btForward.textContent = '->';
+		btForward.title = 'Go Forward';
+		bottom.appendChild(btForward);
+
+		btBack.addEventListener('click', function() {
+			if(self.historyStack.length === 0) { return; }
+			self.forwardStack.push(self.data.num);
+			var lastNum = self.historyStack.pop();
+			console.log(self.forwardStack);
+			self.url = self.serverURL + '/' + lastNum;
+			self.render();
+		});
+
+		btForward.addEventListener('click', function() {
+			if(self.forwardStack.length === 0) { return; }
+			self.historyStack.push(self.data.num);
+			var nextNum = self.forwardStack.pop();
+			self.url = self.serverURL + '/' + nextNum;
+			self.render();
+		});
+
 		btEarliest.addEventListener('click', function(e) {
+			self.historyStack.push(self.data.num);
 			self.url = self.serverURL + '/1';
 			self.render();
 		});
 
 		btPrev.addEventListener('click', function(e) {
+			self.historyStack.push(self.data.num);
 			if(self.data.num > 1) {
 				self.url = self.serverURL + '/' + (parseInt(self.data.num) - 1);
 				self.render(); 
@@ -98,16 +133,19 @@ XKCD.prototype.render = function() {
 		});
 
 		btRandom.addEventListener('click', function(e) {
+			self.historyStack.push(self.data.num);
 			self.url = self.serverURL + '/random';
 			self.render();
 		});
 
 		btNext.addEventListener('click', function(e) {
+			self.historyStack.push(self.data.num);
 			self.url = self.serverURL + '/' + (parseInt(self.data.num) + 1);
 			self.render();
 		});
 
 		btLatest.addEventListener('click', function(e) {
+			self.historyStack.push(self.data.num);
 			self.url = self.serverURL + '/latest';
 			self.render();
 		});
