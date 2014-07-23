@@ -27,7 +27,7 @@ XKCD.prototype.render = function() {
 		//clear element
 		self.element.innerHTML = '';
 
-		console.log(data, data.img, data.num);
+		// console.log(data, data.img, data.num);
 		var top = document.createElement('div');
 		top.className = 'xkcd-embed-top';
 		self.element.appendChild(top);
@@ -119,7 +119,7 @@ XKCD.prototype.render = function() {
 		var btListFavorites = document.createElement('button');
 		btListFavorites.className = 'xkcd-embed-bt xkcd-embed-btListFavorites';
 		btListFavorites.textContent = 'L';
-		btListFavorites.title = 'List Favoritess';
+		btListFavorites.title = 'List Favorites';
 		bottom.appendChild(btListFavorites);
 		self.c.btListFavorites = btListFavorites;
 
@@ -136,8 +136,6 @@ XKCD.prototype.render = function() {
 		window.setTimeout(function() {
 				var imgWidth = img.clientWidth;
 				self.c.imgWidth = imgWidth;
-
-				console.log('imgWidth = ', imgWidth);
 
 				var alt = document.createElement("div");
 				alt.className = 'xkcd-embed-alt';
@@ -161,49 +159,38 @@ XKCD.prototype.render = function() {
 			if(self.historyStack.length === 0) { return; }
 			self.forwardStack.push(self.data.num);
 			var lastNum = self.historyStack.pop();
-			console.log(self.forwardStack);
-			self.url = self.serverURL + '/' + lastNum;
-			self.render();
+
+			// self.url = self.serverURL + '/' + lastNum;
+			// self.render();
+			self.goTo(lastNum, true);
 		});
 
 		btForward.addEventListener('click', function() {
 			if(self.forwardStack.length === 0) { return; }
-			self.historyStack.push(self.data.num);
 			var nextNum = self.forwardStack.pop();
-			self.url = self.serverURL + '/' + nextNum;
-			self.render();
+			self.goTo(nextNum);
 		});
 
 		btEarliest.addEventListener('click', function(e) {
-			self.historyStack.push(self.data.num);
-			self.url = self.serverURL + '/1';
-			self.render();
+			self.goTo(1);
 		});
 
 		btPrev.addEventListener('click', function(e) {
-			self.historyStack.push(self.data.num);
 			if(self.data.num > 1) {
-				self.url = self.serverURL + '/' + (parseInt(self.data.num) - 1);
-				self.render(); 
+				self.goTo(parseInt(self.data.num) - 1);
 			}
 		});
 
 		btRandom.addEventListener('click', function(e) {
-			self.historyStack.push(self.data.num);
-			self.url = self.serverURL + '/random';
-			self.render();
+			self.goTo('random');
 		});
 
 		btNext.addEventListener('click', function(e) {
-			self.historyStack.push(self.data.num);
-			self.url = self.serverURL + '/' + (parseInt(self.data.num) + 1);
-			self.render();
+			self.goTo((parseInt(self.data.num) + 1))
 		});
 
 		btLatest.addEventListener('click', function(e) {
-			self.historyStack.push(self.data.num);
-			self.url = self.serverURL + '/latest';
-			self.render();
+			self.goTo('latest');
 		});
 
 		btFavorite.addEventListener('click', function(e) {
@@ -225,6 +212,14 @@ XKCD.prototype.render = function() {
 		self.element.innerHTML = prevHTML;
 	});
 };
+XKCD.prototype.goTo = function(id, noHistory) {
+	var self = this;
+	if(!noHistory){
+		self.historyStack.push(self.data.num);	
+	}
+	self.url = self.serverURL + '/' + id;
+	self.render();
+};
 XKCD.prototype.populateFavorites = function() {
 	var self = this;
 	var favoritesWindow = self.c.favoritesWindow;
@@ -236,8 +231,17 @@ XKCD.prototype.populateFavorites = function() {
 		var favoriteElement = document.createElement('div');
 		favoriteElement.className = 'xkcd-embed-favoriteElement';
 		favoriteElement.textContent = data.title;
-		console.log(data);
+		favoriteElement.setAttribute('data-id', i);
 		favoritesWindow.appendChild(favoriteElement);
+
+		var number = document.createElement('span');
+		number.className = 'xkcd-embed-number';
+		number.textContent = i;
+		favoriteElement.appendChild(number);
+
+		favoriteElement.addEventListener('click', function() {
+
+		});
 	}
 
 };
