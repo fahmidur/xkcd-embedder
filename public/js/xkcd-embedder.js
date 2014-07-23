@@ -8,6 +8,7 @@ var XKCD = function(element, serverURL) {
 	this.c = {};
 	this.historyStack = new Array();
 	this.forwardStack = new Array();
+	this.favorites = {};
 
 	this.render();
 };
@@ -68,38 +69,69 @@ XKCD.prototype.render = function() {
 		btBack.textContent = '<-';
 		btBack.title = 'Go Back';
 		bottom.appendChild(btBack);
+		self.c.btBack = btBack;
 
 
 		var btEarliest = document.createElement('button');
 		btEarliest.className = 'xkcd-embed-bt xkcd-embed-btEarliest';
 		btEarliest.textContent = "|<";
 		bottom.appendChild(btEarliest);
+		self.c.btEarliest = btEarliest;
 
 		var btPrev = document.createElement('button');
 		btPrev.className = 'xkcd-embed-bt xkcd-embed-btPrev';
 		btPrev.textContent = "<";
 		bottom.appendChild(btPrev);
+		self.c.btPrev = btPrev;
 
 		var btRandom = document.createElement('button');
 		btRandom.className = 'xkcd-embed-bt xkcd-embed-btRandom';
 		btRandom.textContent = "random";
 		bottom.appendChild(btRandom);
+		self.c.btRandom = btRandom;
 
 		var btNext = document.createElement('button');
 		btNext.className = 'xkcd-embed-bt xkcd-embed-btNext';
 		btNext.textContent = ">";
 		bottom.appendChild(btNext);
+		self.c.btNext = btNext;
 
 		var btLatest = document.createElement('button');
 		btLatest.className = 'xkcd-embed-bt xkcd-embed-btLatest';
 		btLatest.textContent = ">|";
 		bottom.appendChild(btLatest);
+		self.c.btLatest = btLatest;
 
 		var btForward = document.createElement('button');
 		btForward.className = 'xkcd-embed-bt xkcd-embed-btForward';
 		btForward.textContent = '->';
 		btForward.title = 'Go Forward';
 		bottom.appendChild(btForward);
+		self.c.btForward = btForward;
+
+		var btFavorite = document.createElement('button');
+		btFavorite.className = 'xkcd-embed-bt xkcd-embed-btFavorite';
+		btFavorite.textContent = '+';
+		btFavorite.title = 'Add to Favorites';
+		bottom.appendChild(btFavorite);
+		self.c.btFavorite = btFavorite;
+
+		var btListFavorites = document.createElement('button');
+		btListFavorites.className = 'xkcd-embed-bt xkcd-embed-btListFavorites';
+		btListFavorites.textContent = 'L';
+		btListFavorites.title = 'List Favoritess';
+		bottom.appendChild(btListFavorites);
+		self.c.btListFavorites = btListFavorites;
+
+		var overlay = document.createElement('div');
+		overlay.className = 'xkcd-embed-overlay';
+		self.element.appendChild(overlay);
+		self.c.overlay = overlay;
+
+		var favoritesWindow = document.createElement('div');
+		favoritesWindow.className = 'xkcd-embed-favoritesWindow';
+		self.element.appendChild(favoritesWindow);
+		self.c.favoritesWindow = favoritesWindow;
 
 		window.setTimeout(function() {
 				var imgWidth = img.clientWidth;
@@ -174,10 +206,58 @@ XKCD.prototype.render = function() {
 			self.render();
 		});
 
+		btFavorite.addEventListener('click', function(e) {
+			self.addToFavorites();
+		});
+
+		btListFavorites.addEventListener('click', function(e) {
+			// overlay.style.display = 'block';
+			self.populateFavorites();
+			favoritesWindow.style.display = 'block';
+		});
+
+		favoritesWindow.addEventListener('click', function(e) {
+			favoritesWindow.style.display = 'none';
+		});
+
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
 		self.element.innerHTML = prevHTML;
 	});
+};
+XKCD.prototype.populateFavorites = function() {
+	var self = this;
+	var favoritesWindow = self.c.favoritesWindow;
+	favoritesWindow.innerHTML = '';
+	self.getFavorites();
+	console.log('favorites = ', self.favorites);
+	for(var i in self.favorites) {
+		var data = self.favorites[i];
+		var favoriteElement = document.createElement('div');
+		favoriteElement.className = 'xkcd-embed-favoriteElement';
+		favoriteElement.textContent = data.title;
+		console.log(data);
+		favoritesWindow.appendChild(favoriteElement);
+	}
+
+};
+XKCD.prototype.addToFavorites = function() {
+	var self = this;
+	self.favorites[self.data.num] = {img: self.data.img, alt: self.data.alt, width: self.c.imgWidth, title: self.data.title};
+	self.saveFavorites();
+};
+XKCD.prototype.getFavorites = function() {
+	var self = this;
+	if(typeof(Storage) !== "undefined") {
+		self.favorites = JSON.parse(localStorage.getItem('favorites'));
+	}
+	return self.favorites;
+};
+XKCD.prototype.saveFavorites = function() {
+	var self = this;
+	if(typeof(Storage) !== "undefined") {
+		localStorage.setItem('favorites', JSON.stringify(self.favorites));
+	}
 };
 XKCD.count = 0;
 

@@ -21,7 +21,7 @@
 	border:0px solid red;
 	color: #2d2d2d;
 	cursor: pointer;
-	font-size: 16px;
+	font-size: 12px;
 	font-weight: bold;
 	margin:0px;
 }
@@ -54,4 +54,36 @@ a.xkcd-embed-title {
 	color: white;
 	padding: 5px;
 	width: 100px;
+}
+.xkcd-embed-btFavorite,  .xkcd-embed-btListFavorites{
+	float: right;
+	background-color: orange;
+}
+.xkcd-embed-overlay {
+	position: fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0,0,0, 0.9);
+	display: none;
+}
+.xkcd-embed-favoritesWindow {
+	position: fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(250,100,0, 0.9);
+	text-align: center;
+	display: none;
+}
+.xkcd-embed-favoriteElement {
+	display: block;
+	margin: 0 auto;
+	max-width:600px;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+.xkcd-embed-favoriteElement:hover {
+	background-color: rgba(0,0,0,0.5);
 }
