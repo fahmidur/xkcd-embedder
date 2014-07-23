@@ -1,18 +1,23 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>XKCD Embedder Test</title>
 	<link rel='stylesheet' href='css/xkcd-embedder.css'/>
+	<meta name="viewport" content="width=device-width, user-scalable=yes">
 	<style>
 		body {
 			font-family: Monospace;
 		}
 		h1 {
-			border-bottom: 2px solid #2d2d2d;
+			/*border-bottom: 2px solid #2d2d2d;*/
 			color: orange;
 		}
 		.author {
 			font-size: small;
 			color: #2d2d2d;
+		}
+		.center {
+			text-align: center;
 		}
 	</style>
 </head>
@@ -20,6 +25,9 @@
 	<h1>XKCD-Embedder <span class='author'>by Syed Reza</span></h1>
 	<center>	
 		<div class='xkcd-embed' data-id='latest'></div>
+		<!-- You can also do: -->
+		<!-- <div class='xkcd-embed' data-id='random'></div> -->
+		<!-- <div class='xkcd-embed' data-id='42'></div> -->
 	</center>
 
 	<script src='js/xkcd-embedder.js'></script>
