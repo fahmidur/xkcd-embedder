@@ -101,6 +101,30 @@ XKCD.prototype.render = function() {
 		btForward.title = 'Go Forward';
 		bottom.appendChild(btForward);
 
+		window.setTimeout(function() {
+				var imgWidth = img.clientWidth;
+				self.c.imgWidth = imgWidth;
+
+				console.log('imgWidth = ', imgWidth);
+
+				var alt = document.createElement("div");
+				alt.className = 'xkcd-embed-alt';
+				alt.textContent = data.alt;
+				alt.style.width = (imgWidth - 10) + 'px';
+				alt.style.display = "none";
+				self.c.alt = alt;
+
+				self.element.appendChild(alt);
+
+				imgWrapper.addEventListener("click", function() {
+					if(alt.style.display === "none") {
+						alt.style.display = '';
+					} else {
+						alt.style.display = "none";
+					}
+				});
+		}, 1000);
+
 		btBack.addEventListener('click', function() {
 			if(self.historyStack.length === 0) { return; }
 			self.forwardStack.push(self.data.num);
@@ -149,30 +173,6 @@ XKCD.prototype.render = function() {
 			self.url = self.serverURL + '/latest';
 			self.render();
 		});
-
-		
-
-		window.setTimeout(function() {
-				var imgWidth = img.clientWidth;
-				self.c.imgWidth = imgWidth;
-
-				var alt = document.createElement("div");
-				alt.className = 'xkcd-embed-alt';
-				alt.textContent = data.alt;
-				alt.style.width = imgWidth - 10;
-				alt.style.display = "none";
-				self.c.alt = alt;
-
-				self.element.appendChild(alt);
-
-				imgWrapper.addEventListener("click", function() {
-					if(alt.style.display === "none") {
-						alt.style.display = '';
-					} else {
-						alt.style.display = "none";
-					}
-				});
-		}, 5000);
 
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
