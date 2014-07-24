@@ -1,7 +1,7 @@
 XKCD Embedder
 ===
 
-A small library for embedding XKCDs. Embed the latest XKCD, a particular XKCD, or a random XKCD.
+A small bit of JS for embedding XKCDs. Embed the latest XKCD, a particular XKCD, or a random XKCD.
 
 For sample usage see [xkcd-embedder.fahmidur.us](http://xkcd-embedder.fahmidur.us)
 
