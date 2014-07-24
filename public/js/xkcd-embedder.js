@@ -215,7 +215,11 @@ XKCD.prototype.render = function() {
 XKCD.prototype.goTo = function(id, noHistory) {
 	var self = this;
 	if(!noHistory){
-		self.historyStack.push(self.data.num);	
+		if(self.data.num && parseInt(self.data.num) === parseInt(id)) {
+		}
+		else {
+			self.historyStack.push(self.data.num);
+		}
 	}
 	self.url = self.serverURL + '/' + id;
 	self.render();
@@ -239,8 +243,14 @@ XKCD.prototype.populateFavorites = function() {
 		number.textContent = i;
 		favoriteElement.appendChild(number);
 
-		favoriteElement.addEventListener('click', function() {
+		favoriteElement.addEventListener('click', function(e) {
+			e.stopPropagation();
+			e.preventDefault();
 
+			var id = this.dataset.id;
+			self.goTo(id);
+			console.log(self.historyStack);
+			
 		});
 	}
 
