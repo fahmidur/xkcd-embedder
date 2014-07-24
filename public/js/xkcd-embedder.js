@@ -312,7 +312,9 @@ XKCD.prototype.populateFavorites = function() {
 		}
 		if(e.keyCode === 32 || e.keyCode === 13) {
 			favoritesWindow.style.display = 'none';
-			self.goTo(this.value);
+			if(this.value.match(/^\d+$/)) {
+				self.goTo(this.value);
+			}
 		}
 	});
 
