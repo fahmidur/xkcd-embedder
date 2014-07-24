@@ -195,6 +195,7 @@ XKCD.prototype.render = function() {
 
 		btFavorite.addEventListener('click', function(e) {
 			self.addToFavorites();
+			alert('Added comic #' + self.data.num + ' to your favorites.');
 		});
 
 		btListFavorites.addEventListener('click', function(e) {
@@ -231,6 +232,32 @@ XKCD.prototype.populateFavorites = function() {
 	self.getFavorites();
 	console.log('favorites = ', self.favorites);
 
+	var inputWrapper = document.createElement('div');
+	inputWrapper.className = 'xkcd-embed-favoritesWindow-inputWrapper';
+	favoritesWindow.appendChild(inputWrapper);
+
+	var input = document.createElement('input');
+	input.className = 'xkcd-embed-favoritesWindow-input';
+	inputWrapper.appendChild(input);
+	input.focus();
+	input.setAttribute('placeholder', 'Enter Comic Number And Go!');
+	setTimeout(function() {
+		input.focus()	
+	}, 200);
+	setTimeout(function() {
+		input.focus()	
+	}, 250);
+
+	input.addEventListener('keyup', function(e) {
+		if(e.keyCode === 27) {
+			favoritesWindow.style.display = 'none';
+		}
+		if(e.keyCode === 32 || e.keyCode === 13) {
+			favoritesWindow.style.display = 'none';
+			self.goTo(this.value);
+		}
+	});
+
 	var removedFlag = false;
 	for(var i in self.favorites) {
 		var data = self.favorites[i];
@@ -249,7 +276,6 @@ XKCD.prototype.populateFavorites = function() {
 		var title = document.createElement('span');
 		title.textContent = data.title;
 		favoriteElement.appendChild(title);
-
 
 
 		var number = document.createElement('span');
