@@ -60,6 +60,10 @@ XKCD.prototype.render = function() {
 		imgWrapper.appendChild(img);
 		self.c.img = img;
 
+		if(self.dataset.maxwidth) {
+			img.style.maxWidth = self.dataset.maxwidth;
+		}
+
 		var bottom = document.createElement('div');
 		bottom.className = 'xkcd-embed-bottom';
 		self.element.appendChild(bottom);
@@ -266,6 +270,16 @@ XKCD.prototype.populateFavorites = function() {
 	var favoritesWrapper = self.c.favoritesWrapper;
 
 	favoritesWrapper.innerHTML = '';
+
+	// TODO: fix mobile issue with favoritesWindow
+	// favoritesWindow.style.position = 'fixed';
+	// favoritesWindow.style.height = '100.00%';
+	// favoritesWindow.style.width = '100.00%';
+	// setTimeout(function()  {
+	// 	// favoritesWindow.style.height = '100%';
+	// 	favoritesWindow.style.height = screen.height;
+	// 	favoritesWindow.style.width = '100%';
+	// }, 50);
 
 	self.getFavorites();
 	console.log('favorites = ', self.favorites);

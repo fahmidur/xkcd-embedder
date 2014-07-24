@@ -77,6 +77,7 @@ a.xkcd-embed-title {
 	background-color: rgba(250,100,0, 0.9);
 	text-align: center;
 	display: none;
+	overflow: auto;
 }
 .xkcd-embed-favoritesWindow-favoritesWrapper {
 	/*border:1px solid red;*/
@@ -129,4 +130,5 @@ a.xkcd-embed-title {
 	text-align: left;
 	border: 0px solid red;
 	outline: none;
+	font-size:17px;
 }

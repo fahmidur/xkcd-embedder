@@ -38,3 +38,8 @@ For a random XKCD:
 ```html
 <div class='xkcd-embed' data-id='random'></div>
 ```
+
+#### You can also set the maxWidth if you need it.
+```html
+<div class='xkcd-embed' data-id='random' data-maxWidth='400px'></div>
+```
