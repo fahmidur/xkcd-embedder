@@ -9,6 +9,7 @@ var XKCD = function(element, serverURL) {
 	this.historyStack = new Array();
 	this.forwardStack = new Array();
 	this.favorites = {};
+	this.favoriteResults = {};
 
 	this.render();
 };
@@ -134,6 +135,38 @@ XKCD.prototype.render = function() {
 		self.element.appendChild(favoritesWindow);
 		self.c.favoritesWindow = favoritesWindow;
 
+		var inputWrapper = document.createElement('div');
+		inputWrapper.className = 'xkcd-embed-favoritesWindow-inputWrapper';
+		favoritesWindow.appendChild(inputWrapper);
+		self.c.inputWrapper = inputWrapper;
+
+		var input = document.createElement('input');
+		input.className = 'xkcd-embed-favoritesWindow-input';
+		inputWrapper.appendChild(input);
+		input.setAttribute('placeholder', 'Enter Comic Number And Go!');
+		self.c.input = input;
+
+		var favoritesWrapper = document.createElement('div');
+		favoritesWrapper.className = 'xkcd-embed-favoritesWindow-favoritesWrapper';
+		favoritesWindow.appendChild(favoritesWrapper);
+		self.c.favoritesWrapper = favoritesWrapper;
+
+		input.addEventListener('keyup', function(e) {
+			if(e.keyCode === 27) {
+				favoritesWindow.style.display = 'none';
+			}
+			if(e.keyCode === 13) {
+				favoritesWindow.style.display = 'none';
+				if(this.value.match(/^\d+$/)) {
+					self.goTo(this.value);
+				}
+			} else {
+				// assume user wants to search
+				self.searchXKCDs(this.value);
+				self.populateFavorites();
+			}
+		});
+
 		window.setTimeout(function() {
 				var imgWidth = img.clientWidth;
 				self.c.imgWidth = imgWidth;
@@ -200,7 +233,8 @@ XKCD.prototype.render = function() {
 		});
 
 		btListFavorites.addEventListener('click', function(e) {
-			// overlay.style.display = 'block';
+			self.favoriteResults = {};
+			self.c.input.value = "";
 			self.populateFavorites();
 			favoritesWindow.style.display = 'block';
 		});
@@ -229,19 +263,17 @@ XKCD.prototype.goTo = function(id, noHistory) {
 XKCD.prototype.populateFavorites = function() {
 	var self = this;
 	var favoritesWindow = self.c.favoritesWindow;
-	favoritesWindow.innerHTML = '';
+	var favoritesWrapper = self.c.favoritesWrapper;
+
+	favoritesWrapper.innerHTML = '';
+
 	self.getFavorites();
 	console.log('favorites = ', self.favorites);
 
-	var inputWrapper = document.createElement('div');
-	inputWrapper.className = 'xkcd-embed-favoritesWindow-inputWrapper';
-	favoritesWindow.appendChild(inputWrapper);
+	var inputWrapper = self.c.inputWrapper;
+	var input = self.c.input;
 
-	var input = document.createElement('input');
-	input.className = 'xkcd-embed-favoritesWindow-input';
-	inputWrapper.appendChild(input);
-	input.focus();
-	input.setAttribute('placeholder', 'Enter Comic Number And Go!');
+	input.focus();	
 	setTimeout(function() {
 		input.focus()	
 	}, 200);
@@ -250,12 +282,19 @@ XKCD.prototype.populateFavorites = function() {
 	}, 250);
 
 	var donotGo = false;
-	for(var i in self.favorites) {
-		var data = self.favorites[i];
+
+	var favorites = self.favorites;
+	var favoriteResultsLength = Object.keys(self.favoriteResults).length;
+	if(favoriteResultsLength > 0) {
+		favorites = self.favoriteResults;
+	}
+	for(var i in favorites) {
+		var data = favorites[i];
+
 		var favoriteElement = document.createElement('div');
 		favoriteElement.className = 'xkcd-embed-favoriteElement';
 		favoriteElement.setAttribute('data-id', i);
-		favoritesWindow.appendChild(favoriteElement);
+		favoritesWrapper.appendChild(favoriteElement);
 
 		var btRemove = document.createElement('span');
 		btRemove.className = 'xkcd-embed-favoriteElement-bt';
@@ -281,7 +320,6 @@ XKCD.prototype.populateFavorites = function() {
 			}
 			var id = this.dataset.id;
 			self.goTo(id);
-
 		});
 
 		btRemove.addEventListener('click', function(e) {
@@ -293,6 +331,7 @@ XKCD.prototype.populateFavorites = function() {
 			donotGo = true;
 		});
 	} // end-for
+
 	inputWrapper.addEventListener('mouseover', function(e) {
 		donotGo = true;
 	});
@@ -307,22 +346,51 @@ XKCD.prototype.populateFavorites = function() {
 		donotGo = true;
 	});
 
-	input.addEventListener('keyup', function(e) {
-		if(e.keyCode === 27) {
-			favoritesWindow.style.display = 'none';
-		}
-		if(e.keyCode === 32 || e.keyCode === 13) {
-			favoritesWindow.style.display = 'none';
-			if(this.value.match(/^\d+$/)) {
-				self.goTo(this.value);
+};
+XKCD.prototype.searchXKCDs = function(q) {
+	var self = this;
+	console.log('searching: ', q);
+	var favoriteResults = {};
+	var searchRegex = new RegExp(q, 'i');
+	var favorite;
+	if(q.match(/^\d+$/)) {
+		for(var k in self.favorites) {
+			for(var k in self.favorites) {
+				favorite = self.favorites[k];
+				if(k.toString().match(q)) {
+					favoriteResults[k] = favorite;
+				}
 			}
 		}
-	});
-
+	} 
+	else {
+		for(var k in self.favorites) {
+			favorite = self.favorites[k];
+			if(favorite.title.match(searchRegex)) {
+				favoriteResults[k] = favorite;
+			}
+			else
+			if(favorite.transcript.match(searchRegex)) {
+				favoriteResults[k] = favorite;	
+			}
+		}
+	}
+	
+	console.log(favoriteResults);
+	self.favoriteResults = favoriteResults;
 };
 XKCD.prototype.addToFavorites = function() {
 	var self = this;
-	self.favorites[self.data.num] = {img: self.data.img, alt: self.data.alt, width: self.c.imgWidth, title: self.data.title};
+	// self.favorites[self.data.num] = {
+	// 	img: self.data.img, 
+	// 	alt: self.data.alt, 
+	// 	width: self.c.imgWidth, 
+	// 	title: self.data.title, 
+	// 	transcript: self.data.transcript
+	// };
+
+	//nevermind, let us just store everything
+	self.favorites[self.data.num] = self.data;
 	self.saveFavorites();
 };
 XKCD.prototype.getFavorites = function() {

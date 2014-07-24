@@ -78,6 +78,10 @@ a.xkcd-embed-title {
 	text-align: center;
 	display: none;
 }
+.xkcd-embed-favoritesWindow-favoritesWrapper {
+	/*border:1px solid red;*/
+	margin: 0 auto;
+}
 .xkcd-embed-favoriteElement {
 	display: block;
 	max-width:600px;
