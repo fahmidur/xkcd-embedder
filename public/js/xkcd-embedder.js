@@ -230,13 +230,27 @@ XKCD.prototype.populateFavorites = function() {
 	favoritesWindow.innerHTML = '';
 	self.getFavorites();
 	console.log('favorites = ', self.favorites);
+
+	var removedFlag = false;
 	for(var i in self.favorites) {
 		var data = self.favorites[i];
 		var favoriteElement = document.createElement('div');
 		favoriteElement.className = 'xkcd-embed-favoriteElement';
-		favoriteElement.textContent = data.title;
 		favoriteElement.setAttribute('data-id', i);
 		favoritesWindow.appendChild(favoriteElement);
+
+		var btRemove = document.createElement('span');
+		btRemove.className = 'xkcd-embed-favoriteElement-bt';
+		btRemove.textContent = 'X';
+		btRemove.setAttribute('title', 'Remove From Favorites');
+		favoriteElement.appendChild(btRemove);
+
+
+		var title = document.createElement('span');
+		title.textContent = data.title;
+		favoriteElement.appendChild(title);
+
+
 
 		var number = document.createElement('span');
 		number.className = 'xkcd-embed-number';
@@ -244,13 +258,22 @@ XKCD.prototype.populateFavorites = function() {
 		favoriteElement.appendChild(number);
 
 		favoriteElement.addEventListener('click', function(e) {
-			e.stopPropagation();
-			e.preventDefault();
-
+			if(removedFlag) {
+				removedFlag = false;
+				return;
+			}
 			var id = this.dataset.id;
 			self.goTo(id);
-			console.log(self.historyStack);
-			
+
+		});
+
+		btRemove.addEventListener('click', function(e) {
+			var id = this.parentNode.dataset.id;
+			console.log('removing... ', id);
+			delete self.favorites[id];
+			console.log(self.favorites);
+			self.saveFavorites();
+			removedFlag = true;
 		});
 	}
 

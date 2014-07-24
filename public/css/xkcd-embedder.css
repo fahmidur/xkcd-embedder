@@ -83,6 +83,7 @@ a.xkcd-embed-title {
 	max-width:600px;
 	background-color: rgba(255, 255, 255, 0.5);
 	padding:5px;
+	padding-left: 0px;
 	margin:5px auto;
 	cursor: pointer;
 	font-weight: bold;
@@ -91,4 +92,13 @@ a.xkcd-embed-title {
 .xkcd-embed-favoriteElement:hover {
 	background-color: rgba(0,0,0,0.9);
 	color: white;
+}
+.xkcd-embed-favoriteElement-bt {
+	padding:5px;
+	background-color: rgba(0,0,0,0.3);
+	margin-right:5px;
+}
+.xkcd-embed-favoriteElement-bt:hover {
+	background-color: rgba(255, 0, 0, 0.7);
+	
 }
