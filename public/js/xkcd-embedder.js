@@ -364,19 +364,20 @@ XKCD.prototype.searchXKCDs = function(q) {
 		}
 	} 
 	else {
+		console.log('HERE');
 		for(var k in self.favorites) {
 			favorite = self.favorites[k];
 			if(favorite.title.match(searchRegex)) {
 				favoriteResults[k] = favorite;
 			}
-			else
-			if(favorite.transcript.match(searchRegex)) {
-				favoriteResults[k] = favorite;	
-			}
+			// else
+			// if(favorite.transcript.match(searchRegex)) {
+			// 	favoriteResults[k] = favorite;	
+			// }
 		}
 	}
 	
-	console.log(favoriteResults);
+	console.log('RESULTS = ', favoriteResults);
 	self.favoriteResults = favoriteResults;
 };
 XKCD.prototype.addToFavorites = function() {
