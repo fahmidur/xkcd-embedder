@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>XKCD Embedder Test</title>
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel='stylesheet' href='css/xkcd-embedder.css'/>
 	<meta name="viewport" content="width=device-width, user-scalable=yes">
 	<style>
@@ -11,10 +12,12 @@
 		h1 {
 			/*border-bottom: 2px solid #2d2d2d;*/
 			color: orange;
+			text-align: center;
 		}
 		.author {
-			font-size: small;
+			font-size: x-small;
 			color: #2d2d2d;
+			font-weight: normal;
 		}
 		.center {
 			text-align: center;
@@ -23,17 +26,20 @@
 			text-decoration: none;
 			color: inherit;
 		}
+		a:hover {
+			cursor: pointer;
+		}
 	</style>
 </head>
 <body>
-	<h1><a href='https://github.com/fahmidur/xkcd-embedder' target='_blank'>XKCD-Embedder</a>&nbsp;<a class='author' target='_blank' href='http://www.syedreza.org'>by Syed Reza</a></h1>
+	<h1><a href='https://github.com/fahmidur/xkcd-embedder' target='_blank'><i class='fa fa-fw fa-github'></i>&nbsp;XKCD-Embedder</a>&nbsp;<a class='author' target='_blank' href='http://www.syedreza.org'>by Syed Reza <i class='fa fa-fw fa-external-link'></i></a></h1>
 	<div class='center'>	
 		<div class='xkcd-embed' data-id='latest'></div>
 		<!-- You can also do: -->
 		<!-- <div class='xkcd-embed' data-id='random'></div> -->
 		<!-- <div class='xkcd-embed' data-id='42'></div> -->
 	</div>
-
+	
 	<script src='js/xkcd-embedder.js'></script>
 </body>
 </html>
