@@ -248,17 +248,7 @@ XKCD.prototype.populateFavorites = function() {
 		input.focus()	
 	}, 250);
 
-	input.addEventListener('keyup', function(e) {
-		if(e.keyCode === 27) {
-			favoritesWindow.style.display = 'none';
-		}
-		if(e.keyCode === 32 || e.keyCode === 13) {
-			favoritesWindow.style.display = 'none';
-			self.goTo(this.value);
-		}
-	});
-
-	var removedFlag = false;
+	var donotGo = false;
 	for(var i in self.favorites) {
 		var data = self.favorites[i];
 		var favoriteElement = document.createElement('div');
@@ -284,8 +274,8 @@ XKCD.prototype.populateFavorites = function() {
 		favoriteElement.appendChild(number);
 
 		favoriteElement.addEventListener('click', function(e) {
-			if(removedFlag) {
-				removedFlag = false;
+			if(donotGo) {
+				donotGo = false;
 				return;
 			}
 			var id = this.dataset.id;
@@ -299,9 +289,32 @@ XKCD.prototype.populateFavorites = function() {
 			delete self.favorites[id];
 			console.log(self.favorites);
 			self.saveFavorites();
-			removedFlag = true;
+			donotGo = true;
 		});
-	}
+	} // end-for
+	inputWrapper.addEventListener('mouseover', function(e) {
+		donotGo = true;
+	});
+
+	inputWrapper.addEventListener('click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		donotGo = true;
+	});
+
+	input.addEventListener('click', function(e) {
+		donotGo = true;
+	});
+
+	input.addEventListener('keyup', function(e) {
+		if(e.keyCode === 27) {
+			favoritesWindow.style.display = 'none';
+		}
+		if(e.keyCode === 32 || e.keyCode === 13) {
+			favoritesWindow.style.display = 'none';
+			self.goTo(this.value);
+		}
+	});
 
 };
 XKCD.prototype.addToFavorites = function() {
