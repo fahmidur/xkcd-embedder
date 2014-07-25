@@ -410,8 +410,11 @@ XKCD.prototype.addToFavorites = function() {
 };
 XKCD.prototype.getFavorites = function() {
 	var self = this;
-	if(typeof(Storage) !== "undefined") {
-		self.favorites = JSON.parse(localStorage.getItem('favorites'));
+	if(typeof(Storage) === "undefined") {
+		self.favorites = {};
+	}
+	else {
+		self.favorites = JSON.parse(localStorage.getItem('favorites')) || {};
 	}
 	return self.favorites;
 };

@@ -3,7 +3,9 @@
   "description": "An embedder of XKCDs",
   "author": "Syed Reza s.f.reza@gmail.com",
   "dependencies": {
+    "crypto": "0.0.3",
     "express": "^4.6.1",
+    "mongoose": "^3.8.13",
     "prettyjson": "^1.0.0",
     "request": "^2.37.0"
   },

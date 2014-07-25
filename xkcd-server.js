@@ -15,15 +15,13 @@ var xkcd = (function() {
 	function getURL(opt) {
 		if(opt.id && cache[opt.id]) { return opt.res.end(cache[opt.id]); }
 
-		console.log('NEW REQUEST', new Date());
+		// console.log('NEW REQUEST', new Date());
 		request({url: opt.url, json: true}, function(error, response, body) {
 			if(!error && response.statusCode === 200) {
 				cache[body.num] = JSON.stringify(body);
-				// res.end(cache[body.num]);
 				opt.successCallback(opt.res, body);
 			} else {
 				opt.failureCallback(opt.res);
-				// res.end(JSON.stringify({error: true}));
 			}
 		});
 	};
@@ -65,7 +63,6 @@ var xkcd = (function() {
 			successCallback: function(res2, body) {
 				var latestNum = body.num;
 				var randomID = ~~(Math.random() * latestNum)+1;
-				// res.end(JSON.stringify({latestNum: latestNum, randomID: randomID}));
 				getURL({
 					id: randomID, //cache
 					res: res,
