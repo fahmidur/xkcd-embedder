@@ -6,6 +6,7 @@ var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var models = require('./models');
+var async = require('async');
 
 
 var app = express();
@@ -18,13 +19,22 @@ mongoose.connect('mongodb://' + mongodbAddress + '/' + mongodbName);
 
 app.use(session({
 	secret: 'xkcd-is-awseome',
+	saveUninitialized: true,
+	resave: true,
 	store: new MongoStore({
 		url: 'mongodb://' + mongodbAddress,
 		db: mongodbName
 	})
 }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: true}));
+
+
+/**
+ * Quick and Dirty Sequence based Captcha
+ * Expects res.session to exist
+ */
+var seqCap = require('./lib/seqCaptcha.js');
 
 var xkcd = (function() {
 	var cache = {};
@@ -97,6 +107,25 @@ var xkcd = (function() {
 		});	
 	}
 
+	function login(req, res) {
+		var email = req.body.email;
+		var password = req.body.password;
+
+		models.User.findOne({email: email}, function(err, user) {
+			if(err || !user) {
+				res.end(JSON.stringify({ok: false, error: 'User not found'}));
+				return;
+			}
+			if(user.passwordMatches(password)) {
+				req.session.user = user;
+				user.logLogin();
+				res.end( JSON.stringify({ ok: true, user: user}) );
+				return;
+			}
+			res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
+		});
+	}
+
 	function register(req, res) {
 		var email = req.body.email;
 		var password = req.body.password;
@@ -105,20 +134,68 @@ var xkcd = (function() {
 			email: email,
 		});
 		user.password = password;
-		user.save(function(err) {
-			if(err) { 
-				res.end('Error saving user: ' + err);
-			} else {
-				res.end('User saved: ' + user);
+
+
+		var errors = [];
+		async.parallel([
+		function validatePresencePassword(callback) {
+			if(!password || password.match(/^\s+$/)) {
+				errors.push('Password is blank');
 			}
+			callback();
+		},
+		function validatePresenceEmail(callback) {
+			if(!email || email.match(/^\s+$/)) {
+				errors.push('Email is blank WTF!');
+			}
+			callback();
+		},
+		function validateEmailFormat(callback) {
+			if(email && !email.match(/^.+\@.+$/)) {
+				errors.push('Email format invalid');
+			}
+			callback();
+		},
+		function validateEmailUnique(callback) {
+			models.User.findOne({email: email}, function(err, user) {
+				if(user) {
+					errors.push('User email is taken');
+				}
+				callback();
+			});
+		}
+		], function() {
+			if(errors.length > 0) {
+				res.end(JSON.stringify({ok: false, errors: errors}));
+			} else {
+				user.save(function(err) {
+					if(err) {
+						res.end(JSON.stringify({ok: false, error: err}));
+					} else {
+						res.end(JSON.stringify({ok: true, user: user}));
+					}
+				});
+			}
+
 		});
+
+		// user.save(function(err) {
+		// 	if(err) { 
+		// 		// res.end('Error saving user: ' + err);
+		// 		res.end(JSON.stringify({ok: false, error: err}));
+		// 	} else {
+		// 		// res.end('User saved: ' + user);
+		// 		res.end(JSON.stringify({ok: true, user: user}));
+		// 	}
+		// });
 	}
 
 	return {
 		getLatest: getLatest,
 		getID: getID,
 		getRandom: getRandom,
-		register: register
+		register: register,
+		login: login
 	};
 })();
 
@@ -132,6 +209,16 @@ function allowAccess(req, res, next) {
 	next();
 };
 
+app.all('*', allowAccess, function displaySession(req, res, next) {
+	console.log('SESSION = \n', req.session);
+	next();
+});
+
+// The seqCap routes
+app.get('/seqCap/fetch', allowAccess, seqCap.fetch);
+app.post('/seqCap/isCorrect', allowAccess, seqCap.isCorrect);
+
+
 app.use('/', allowAccess, express.static(__dirname + '/public'));
 app.use('/js', allowAccess, express.static(__dirname + '/public/js'));
 app.use('/css', allowAccess, express.static(__dirname + '/public/css'));
@@ -140,6 +227,7 @@ app.get('/latest', allowAccess, xkcd.getLatest);
 app.get('/random', allowAccess, xkcd.getRandom);
 app.get('/:id(\\d+)', allowAccess, xkcd.getID);
 app.post('/register', allowAccess, xkcd.register);
+app.post('/login', allowAccess, xkcd.login);
 
 
 app.listen(app.get('port'), function() {

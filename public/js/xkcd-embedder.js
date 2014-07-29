@@ -416,7 +416,7 @@ XKCD.prototype.saveFavorites = function() {
 XKCD.count = 0;
 
 var XKCD_Embedder = function(serverURL) {
-	// TODO: insert stylesheet
+	// TODO insert stylesheet
 	
 	var ar = document.querySelectorAll('.xkcd-embed');
 	var xkcds = new Array();

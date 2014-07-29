@@ -69,5 +69,13 @@ UserSchema.methods.passwordMatches = function(password) {
 	return false;
 };
 
+UserSchema.methods.logLogin = function() {
+	this.last_login = new Date();
+	this.save(function(err, user) {
+		if(err) {
+			console.log('ERROR: Unable to logLogin. Unable to save: ', err);	
+		}
+	});
+};
 
 module.exports = mongoose.model('User', UserSchema);
