@@ -197,9 +197,6 @@ XKCD.prototype.render = function() {
 			if(self.historyStack.length === 0) { return; }
 			self.forwardStack.push(self.data.num);
 			var lastNum = self.historyStack.pop();
-
-			// self.url = self.serverURL + '/' + lastNum;
-			// self.render();
 			self.goTo(lastNum, true);
 		});
 
@@ -396,14 +393,6 @@ XKCD.prototype.searchXKCDs = function(q) {
 };
 XKCD.prototype.addToFavorites = function() {
 	var self = this;
-	// self.favorites[self.data.num] = {
-	// 	img: self.data.img, 
-	// 	alt: self.data.alt, 
-	// 	width: self.c.imgWidth, 
-	// 	title: self.data.title, 
-	// 	transcript: self.data.transcript
-	// };
-
 	//nevermind, let us just store everything
 	self.favorites[self.data.num] = self.data;
 	self.saveFavorites();
@@ -427,7 +416,7 @@ XKCD.prototype.saveFavorites = function() {
 XKCD.count = 0;
 
 var XKCD_Embedder = function(serverURL) {
-	//insert stylesheet
+	// TODO: insert stylesheet
 	
 	var ar = document.querySelectorAll('.xkcd-embed');
 	var xkcds = new Array();
