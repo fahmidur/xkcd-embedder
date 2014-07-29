@@ -216,7 +216,7 @@ app.all('*', allowAccess, function displaySession(req, res, next) {
 
 // The seqCap routes
 app.get('/seqCap/fetch', allowAccess, seqCap.fetch);
-app.post('/seqCap/isCorrect', allowAccess, seqCap.isCorrect);
+app.post('/seqCap/check', allowAccess, seqCap.check);
 
 
 app.use('/', allowAccess, express.static(__dirname + '/public'));
