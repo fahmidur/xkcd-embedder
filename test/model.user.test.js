@@ -2,7 +2,7 @@ var should = require('should');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 
-mongoose.connect('mongodb://localhost/devlog_test');
+mongoose.connect('mongodb://localhost/xkcd-embedder_test');
 
 var User = require('../models/User');
 

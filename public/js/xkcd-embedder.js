@@ -140,7 +140,7 @@ XKCD.prototype.render = function() {
 
 		
 
-		// Start of User Div 
+		//----------------Start of User Div-----------------------------------------
 		var userDivWrapper = document.createElement('div');
 		userDivWrapper.className = 'xkcd-embed-userDivWrapper';
 		favoritesWindow.appendChild(userDivWrapper);
@@ -151,13 +151,16 @@ XKCD.prototype.render = function() {
 		userDivWrapper.appendChild(userDiv);
 		self.c.userDiv = userDiv;
 
+		var loginDiv = document.createElement('div');
+		userDiv.appendChild(loginDiv);
+
 		//---------------
 		var loginEmail = document.createElement('input');
 		loginEmail.className = 'xkcd-embed-userDiv-input';
 		loginEmail.setAttribute('placeholder', 'Email');
 		loginEmail.setAttribute('type', 'email');
 		loginEmail.setAttribute('required', 'true');
-		userDiv.appendChild(loginEmail);
+		loginDiv.appendChild(loginEmail);
 		self.c.loginEmail = loginEmail;
 
 		var loginPassword = document.createElement('input');
@@ -165,19 +168,20 @@ XKCD.prototype.render = function() {
 		loginPassword.setAttribute('placeholder', 'Password');
 		loginPassword.setAttribute('type', 'password');
 		loginPassword.setAttribute('required', 'true');
-		userDiv.appendChild(loginPassword);
+		loginDiv.appendChild(loginPassword);
 		self.c.loginPassword = loginPassword;
 
 		var loginSubmit = document.createElement('button');
 		loginSubmit.className = 'xkcd-embed-userDiv-btn';
 		loginSubmit.textContent = 'Sign In';
-		userDiv.appendChild(loginSubmit);
+		loginDiv.appendChild(loginSubmit);
 		self.c.loginSubmit = loginSubmit;
 
 		loginSubmit.addEventListener('click', self.loginAction);
-
+		self.checkLoginState();
 		//---------------
-		// End of User Div
+
+		//-------End of User Div----------------------------------------------------
 
 		var inputWrapper = document.createElement('div');
 		inputWrapper.className = 'xkcd-embed-favoritesWindow-inputWrapper';
@@ -287,6 +291,17 @@ XKCD.prototype.render = function() {
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
 		self.element.innerHTML = prevHTML;
+	});
+};
+XKCD.prototype.checkLoginState = function() {
+	var self = this;
+	XKCD_Embedder.getJSON(self.serverURL + '/isLoggedIn', function(loggedIn) {
+		console.log('is logged in = ', loggedIn);
+		if(loggedIn) {
+			self.c.userDiv.style.display = 'none';
+		}
+	}, function() {
+		console.log('is logged in check failed');
 	});
 };
 XKCD.prototype.loginAction = function(e) {
@@ -479,4 +494,5 @@ XKCD_Embedder.getJSON = function(url, successCallback, failureCallback) {
 };
 
 //-----------------------------------------------------------------------
-var xkcd = new XKCD_Embedder('http://xkcd-embedder.fahmidur.us');
+// var xkcd = new XKCD_Embedder('http://xkcd-embedder.fahmidur.us');
+var xkcd = new XKCD_Embedder('http://localhost:4567');

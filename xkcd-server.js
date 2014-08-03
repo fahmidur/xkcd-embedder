@@ -188,13 +188,23 @@ var xkcd = (function() {
 	}
 
 	function isLoggedIn(req, res) {
-		console.log('IS LOGGED IN. SESSION = ', req.session);
+		// console.log('IS LOGGED IN. SESSION = ', req.session);
 		if(req.session && req.session.user) {
 			res.end(JSON.stringify(true));
 		} else {
 			res.end(JSON.stringify(false));
 		}
-	};
+	}
+
+	function logout(req, res) {
+		if(req.session && req.session.user) {
+			res.end('goodbye ' + req.session.user.email);
+			req.session.destroy();
+		}
+		else {
+			res.end('no session to destroy');
+		}
+	}
 
 	return {
 		getLatest: getLatest,
@@ -202,6 +212,7 @@ var xkcd = (function() {
 		getRandom: getRandom,
 		register: register,
 		login: login,
+		logout: logout,
 		isLoggedIn: isLoggedIn
 	};
 })();
@@ -235,6 +246,7 @@ app.get('/random', allowAccess, xkcd.getRandom);
 app.get('/:id(\\d+)', allowAccess, xkcd.getID);
 app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
+app.get('/logout', allowAccess, xkcd.logout);
 app.get('/isLoggedIn', allowAccess, xkcd.isLoggedIn);
 
 
