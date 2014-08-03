@@ -178,16 +178,6 @@ var xkcd = (function() {
 			}
 
 		});
-
-		// user.save(function(err) {
-		// 	if(err) { 
-		// 		// res.end('Error saving user: ' + err);
-		// 		res.end(JSON.stringify({ok: false, error: err}));
-		// 	} else {
-		// 		// res.end('User saved: ' + user);
-		// 		res.end(JSON.stringify({ok: true, user: user}));
-		// 	}
-		// });
 	}
 
 	return {
@@ -209,10 +199,10 @@ function allowAccess(req, res, next) {
 	next();
 };
 
-app.all('*', allowAccess, function displaySession(req, res, next) {
-	console.log('SESSION = \n', req.session);
-	next();
-});
+// app.all('*', allowAccess, function displaySession(req, res, next) {
+// 	// console.log('SESSION = \n', req.session);
+// 	next();
+// });
 
 // The seqCap routes
 app.get('/seqCap/fetch', allowAccess, seqCap.fetch);

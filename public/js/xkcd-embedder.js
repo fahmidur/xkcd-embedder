@@ -139,6 +139,34 @@ XKCD.prototype.render = function() {
 		self.element.appendChild(favoritesWindow);
 		self.c.favoritesWindow = favoritesWindow;
 
+		
+
+		// Start of User Div 
+		var userDivWrapper = document.createElement('div');
+		userDivWrapper.className = 'xkcd-embed-userDivWrapper';
+		favoritesWindow.appendChild(userDivWrapper);
+		self.c.userDivWrapper = userDivWrapper;
+
+		var userDiv = document.createElement('div');
+		userDiv.className = 'xkcd-embed-userDiv';
+		userDivWrapper.appendChild(userDiv);
+		self.c.userDiv = userDiv;
+
+		//---------------
+		var userRegistrationEmail = document.createElement('input');
+		userRegistrationEmail.className = 'xkcd-embed-userDiv-input';
+		userRegistrationEmail.setAttribute('placeholder', 'Email');
+		userRegistrationEmail.setAttribute('type', 'email');
+		userRegistrationEmail.setAttribute('required', 'true');
+		userDiv.appendChild(userRegistrationEmail);
+		self.c.userRegistrationEmail = userRegistrationEmail;
+
+		var userRegistrationPassword = document.createElement('input');
+
+
+		//---------------
+		// End of User Div
+
 		var inputWrapper = document.createElement('div');
 		inputWrapper.className = 'xkcd-embed-favoritesWindow-inputWrapper';
 		favoritesWindow.appendChild(inputWrapper);
@@ -343,20 +371,16 @@ XKCD.prototype.populateFavorites = function() {
 		});
 	} // end-for
 
-	inputWrapper.addEventListener('mouseover', function(e) {
-		donotGo = true;
-	});
-
-	inputWrapper.addEventListener('click', function(e) {
+	function preventGo(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		donotGo = true;
-	});
+	};
 
-	input.addEventListener('click', function(e) {
-		donotGo = true;
-	});
-
+	inputWrapper.addEventListener('mouseover', preventGo);
+	inputWrapper.addEventListener('click', preventGo);
+	input.addEventListener('click', preventGo);
+	self.c.userDiv.addEventListener('click', preventGo);
 };
 XKCD.prototype.searchXKCDs = function(q) {
 	var self = this;
@@ -366,14 +390,12 @@ XKCD.prototype.searchXKCDs = function(q) {
 	var favorite;
 	if(q.match(/^\d+$/)) {
 		for(var k in self.favorites) {
-			for(var k in self.favorites) {
-				favorite = self.favorites[k];
-				if(k.toString().match(q)) {
-					favoriteResults[k] = favorite;
-				}
+			favorite = self.favorites[k];
+			if(k.toString().match(q)) {
+				favoriteResults[k] = favorite;
 			}
 		}
-	} 
+	}
 	else {
 		console.log('HERE');
 		for(var k in self.favorites) {
