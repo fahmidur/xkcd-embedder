@@ -118,7 +118,7 @@ var xkcd = (function() {
 			}
 			if(user.passwordMatches(password)) {
 				req.session.user = user;
-				user.logLogin();
+				user.logLogin(); // Updates the last login attribute
 				res.end( JSON.stringify({ ok: true, user: user}) );
 				return;
 			}
@@ -163,6 +163,13 @@ var xkcd = (function() {
 				}
 				callback();
 			});
+		},
+		function validateCaptchaPassed(callback) {
+			console.log(req.session);
+			if(!seqCap.isCorrect(req)) {
+				errors.push('Captcha answer is incorrect.');
+			}
+			callback();
 		}
 		], function() {
 			if(errors.length > 0) {
@@ -180,12 +187,22 @@ var xkcd = (function() {
 		});
 	}
 
+	function isLoggedIn(req, res) {
+		console.log('IS LOGGED IN. SESSION = ', req.session);
+		if(req.session && req.session.user) {
+			res.end(JSON.stringify(true));
+		} else {
+			res.end(JSON.stringify(false));
+		}
+	};
+
 	return {
 		getLatest: getLatest,
 		getID: getID,
 		getRandom: getRandom,
 		register: register,
-		login: login
+		login: login,
+		isLoggedIn: isLoggedIn
 	};
 })();
 
@@ -218,6 +235,7 @@ app.get('/random', allowAccess, xkcd.getRandom);
 app.get('/:id(\\d+)', allowAccess, xkcd.getID);
 app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
+app.get('/isLoggedIn', allowAccess, xkcd.isLoggedIn);
 
 
 app.listen(app.get('port'), function() {

@@ -76,7 +76,6 @@ XKCD.prototype.render = function() {
 		bottom.appendChild(btBack);
 		self.c.btBack = btBack;
 
-
 		var btEarliest = document.createElement('button');
 		btEarliest.className = 'xkcd-embed-bt xkcd-embed-btEarliest';
 		btEarliest.textContent = "|<";
@@ -153,16 +152,29 @@ XKCD.prototype.render = function() {
 		self.c.userDiv = userDiv;
 
 		//---------------
-		var userRegistrationEmail = document.createElement('input');
-		userRegistrationEmail.className = 'xkcd-embed-userDiv-input';
-		userRegistrationEmail.setAttribute('placeholder', 'Email');
-		userRegistrationEmail.setAttribute('type', 'email');
-		userRegistrationEmail.setAttribute('required', 'true');
-		userDiv.appendChild(userRegistrationEmail);
-		self.c.userRegistrationEmail = userRegistrationEmail;
+		var loginEmail = document.createElement('input');
+		loginEmail.className = 'xkcd-embed-userDiv-input';
+		loginEmail.setAttribute('placeholder', 'Email');
+		loginEmail.setAttribute('type', 'email');
+		loginEmail.setAttribute('required', 'true');
+		userDiv.appendChild(loginEmail);
+		self.c.loginEmail = loginEmail;
 
-		var userRegistrationPassword = document.createElement('input');
+		var loginPassword = document.createElement('input');
+		loginPassword.className = 'xkcd-embed-userDiv-input';
+		loginPassword.setAttribute('placeholder', 'Password');
+		loginPassword.setAttribute('type', 'password');
+		loginPassword.setAttribute('required', 'true');
+		userDiv.appendChild(loginPassword);
+		self.c.loginPassword = loginPassword;
 
+		var loginSubmit = document.createElement('button');
+		loginSubmit.className = 'xkcd-embed-userDiv-btn';
+		loginSubmit.textContent = 'Sign In';
+		userDiv.appendChild(loginSubmit);
+		self.c.loginSubmit = loginSubmit;
+
+		loginSubmit.addEventListener('click', self.loginAction);
 
 		//---------------
 		// End of User Div
@@ -175,7 +187,7 @@ XKCD.prototype.render = function() {
 		var input = document.createElement('input');
 		input.className = 'xkcd-embed-favoritesWindow-input';
 		inputWrapper.appendChild(input);
-		input.setAttribute('placeholder', 'Enter Comic Number And Go!');
+		input.setAttribute('placeholder', 'Enter Comic Number | Search');
 		self.c.input = input;
 
 		var favoritesWrapper = document.createElement('div');
@@ -276,6 +288,9 @@ XKCD.prototype.render = function() {
 		console.log('Failed to load resource: ', this.url);
 		self.element.innerHTML = prevHTML;
 	});
+};
+XKCD.prototype.loginAction = function(e) {
+	console.log('logging in...');
 };
 XKCD.prototype.goTo = function(id, noHistory) {
 	var self = this;

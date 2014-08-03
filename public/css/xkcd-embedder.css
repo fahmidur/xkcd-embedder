@@ -94,13 +94,36 @@ a.xkcd-embed-title {
 .xkcd-embed-userDiv-input {
 	display: block;
 	margin: 0px;
+	margin-right:2px;
 	float: left;
 	border: 0px solid red;
 	outline: none;
 	border-radius: 0px;
-	background-color: rgba(0,0,0,0.5);
-	color: white;
+	/*background-color: rgba(0,0,0,0.5);*/
+	background-color: rgba(255,255,255,0.8);
+	color: #111;
 	padding: 3px;
+	font-size: 10px;
+}
+.xkcd-embed-userDiv-btn {
+	float: left;
+	margin: 0px;
+	padding: 0px;
+	padding:3px;
+	font-size: 10px;
+	border: 0px solid red;
+	background-color: rgba(250,150,0, 0.9);
+	color: #2d2d2d;
+	font-weight: bold;
+	transition-duration:1s;
+	transition-timing-function:cubic-bezier(0.06, 1.47, 0.29, 0.87);
+	transition-property: background;
+	cursor: pointer;
+}
+.xkcd-embed-userDiv-btn:hover {
+	
+	background-color: #2d2d2d;
+	color: white;
 }
 .xkcd-embed-favoritesWindow-favoritesWrapper {
 	/*border:1px solid red;*/
@@ -116,6 +139,9 @@ a.xkcd-embed-title {
 	cursor: pointer;
 	font-weight: bold;
 	text-align: left;
+	transition-duration:2s;
+	transition-timing-function:cubic-bezier(0.06, 1.47, 0.29, 0.87);
+	transition-property: background;
 }
 .xkcd-embed-favoriteElement:hover {
 	background-color: rgba(0,0,0,0.9);
