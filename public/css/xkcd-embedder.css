@@ -67,6 +67,7 @@ a.xkcd-embed-title {
 	height:100%;
 	background-color: rgba(0,0,0, 0.9);
 	display: none;
+	-webkit-filter: blur(5px);
 }
 .xkcd-embed-favoritesWindow {
 	position: fixed;
@@ -74,14 +75,15 @@ a.xkcd-embed-title {
 	left:0px;
 	width:100%;
 	height:100%;
-	background-color: rgba(250,100,0, 0.9);
-	/*background-color: rgba(0, 0, 0, 0.9);*/
+	background-color: rgba(250,100,0, 0.95);
+	/*background-color: rgba(0, 0, 0, 0.95);*/
 	text-align: center;
 	display: none;
 	overflow: auto;
 }
 .xkcd-embed-userDivWrapper {
 	min-height:10px;
+	overflow: auto;
 }
 .xkcd-embed-userDiv {
 	display: block;
@@ -90,6 +92,16 @@ a.xkcd-embed-title {
 	padding: 0px;
 	padding-top: 5px;
 	overflow: auto;
+}
+.xkcd-embed-userDiv > div {
+	display: block;
+	float: left;
+}
+.xkcd-embed-link {
+	font-weight: bold;
+	color: #2d2d2d;
+	font-size: 10px;
+	cursor: pointer;
 }
 .xkcd-embed-userDiv-input {
 	display: block;
@@ -104,6 +116,7 @@ a.xkcd-embed-title {
 	color: #111;
 	padding: 3px;
 	font-size: 10px;
+	/*font-size: 17px;*/
 }
 .xkcd-embed-userDiv-btn {
 	float: left;
@@ -111,6 +124,7 @@ a.xkcd-embed-title {
 	padding: 0px;
 	padding:3px;
 	font-size: 10px;
+	/*font-size: 17px;*/
 	border: 0px solid red;
 	background-color: rgba(250,150,0, 0.9);
 	color: #2d2d2d;

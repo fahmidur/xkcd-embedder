@@ -111,9 +111,12 @@ var xkcd = (function() {
 		var email = req.body.email;
 		var password = req.body.password;
 
+		console.log('** login-email: ', email);
+		console.log('** login-passwod: ', password);
+
 		models.User.findOne({email: email}, function(err, user) {
 			if(err || !user) {
-				res.end(JSON.stringify({ok: false, error: 'User not found'}));
+				res.end(JSON.stringify({ok: false, error: 'User ' + email + ' not found'}));
 				return;
 			}
 			if(user.passwordMatches(password)) {
@@ -190,19 +193,20 @@ var xkcd = (function() {
 	function isLoggedIn(req, res) {
 		// console.log('IS LOGGED IN. SESSION = ', req.session);
 		if(req.session && req.session.user) {
-			res.end(JSON.stringify(true));
+			res.end(JSON.stringify({isLoggedIn: true, user: req.session.user }));
 		} else {
-			res.end(JSON.stringify(false));
+			res.end(JSON.stringify({isLoggedIn: false}));
 		}
 	}
 
 	function logout(req, res) {
 		if(req.session && req.session.user) {
-			res.end('goodbye ' + req.session.user.email);
+			// res.end('goodbye ' + req.session.user.email);
+			res.end(JSON.stringify({ok: true, user_email: req.session.user.email }));
 			req.session.destroy();
 		}
 		else {
-			res.end('no session to destroy');
+			res.end(JSON.stringify({ok: false}));
 		}
 	}
 

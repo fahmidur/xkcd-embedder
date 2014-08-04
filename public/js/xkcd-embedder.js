@@ -10,6 +10,7 @@ var XKCD = function(element, serverURL) {
 	this.forwardStack = new Array();
 	this.favorites = {};
 	this.favoriteResults = {};
+	this.user = null;
 
 	this.render();
 };
@@ -151,10 +152,12 @@ XKCD.prototype.render = function() {
 		userDivWrapper.appendChild(userDiv);
 		self.c.userDiv = userDiv;
 
+		
+		//------------- login div
 		var loginDiv = document.createElement('div');
 		userDiv.appendChild(loginDiv);
+		self.c.loginDiv = loginDiv;
 
-		//---------------
 		var loginEmail = document.createElement('input');
 		loginEmail.className = 'xkcd-embed-userDiv-input';
 		loginEmail.setAttribute('placeholder', 'Email');
@@ -177,9 +180,21 @@ XKCD.prototype.render = function() {
 		loginDiv.appendChild(loginSubmit);
 		self.c.loginSubmit = loginSubmit;
 
-		loginSubmit.addEventListener('click', self.loginAction);
-		self.checkLoginState();
+		loginSubmit.addEventListener('click', function() { self.loginAction(); } );
 		//---------------
+
+		//------------ logout div
+		var logoutDiv = document.createElement('div');
+		userDiv.appendChild(logoutDiv);
+		self.c.logoutDiv = logoutDiv;
+
+		var logoutLink = document.createElement('span');
+		logoutLink.className = 'xkcd-embed-link';
+		logoutDiv.appendChild(logoutLink);
+		self.c.logoutLink = logoutLink;
+		logoutLink.addEventListener('click', function() { self.logoutAction(); });
+
+		//----------------------------
 
 		//-------End of User Div----------------------------------------------------
 
@@ -287,25 +302,73 @@ XKCD.prototype.render = function() {
 		favoritesWindow.addEventListener('click', function(e) {
 			favoritesWindow.style.display = 'none';
 		});
+		self.checkLoginState();
 
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
 		self.element.innerHTML = prevHTML;
 	});
 };
+XKCD.prototype.updateUserDiv = function() {
+	var self = this;
+	if(self.user) {
+		self.c.logoutLink.textContent = 'Logout ' + self.user.email;
+		self.c.loginDiv.style.display = 'none';
+		self.c.logoutDiv.style.display = 'block';
+	} else {
+		self.c.loginDiv.style.display = 'block';
+		self.c.logoutDiv.style.display = 'none';
+	}
+};
 XKCD.prototype.checkLoginState = function() {
 	var self = this;
-	XKCD_Embedder.getJSON(self.serverURL + '/isLoggedIn', function(loggedIn) {
-		console.log('is logged in = ', loggedIn);
-		if(loggedIn) {
-			self.c.userDiv.style.display = 'none';
+	XKCD_Embedder.getJSON(self.serverURL + '/isLoggedIn', function(data) {
+		console.log('is logged in = ', data);
+		if(data.isLoggedIn) {
+			self.user = data.user;
+			self.updateUserDiv();
+			
 		}
 	}, function() {
 		console.log('is logged in check failed');
 	});
 };
+XKCD.prototype.logoutAction = function(e) {
+	var self = this;
+	XKCD_Embedder.getJSON(self.serverURL + '/logout', 
+	function success(data) {
+		console.log('Logout! ', data);
+		self.user = null;
+	},
+	function failure() {
+		console.log('failed to logout');
+	});
+
+	self.updateUserDiv();
+};
 XKCD.prototype.loginAction = function(e) {
 	console.log('logging in...');
+	var self = this;
+	console.log(self);
+	XKCD_Embedder.postJSON(self.serverURL + '/login', {
+		email: self.c.loginEmail.value,
+		password: self.c.loginPassword.value
+	},
+	function success(data) {
+		console.log('success! data = ', data);
+		if(data.ok) {
+			self.c.logoutLink.textContent = 'Logout ' + data.user.email;
+
+			self.c.loginDiv.style.display = 'none';
+			self.c.logoutDiv.style.display = 'block';
+		} else {
+			self.c.loginPassword.value = '';
+			self.c.loginPassword.focus();
+		}
+	}, 
+	function failure() {
+		console.log('failure!');
+	});
 };
 XKCD.prototype.goTo = function(id, noHistory) {
 	var self = this;
@@ -491,6 +554,35 @@ XKCD_Embedder.getJSON = function(url, successCallback, failureCallback) {
 	};
 	xmlhttp.open("GET", url, false);
 	xmlhttp.send();
+};
+XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
+	var xmlhttp = new XMLHttpRequest();
+	// var fdata = new FormData();
+	// for(var k in data) {
+	// 	console.log(k, ' => ', data[k]);
+	// 	fdata.append(k, data[k]);
+	// }
+	// console.log('FORM DATA = ', fdata);
+	var params = "";
+	for(var k in data) {
+		console.log(k, ' => ', data[k]);
+		params += encodeURIComponent(k) + "=" + encodeURIComponent(data[k]) + "&";
+	}
+	console.log(params);
+	
+	xmlhttp.onreadystatechange = function() {
+		if(xmlhttp.readyState === 4) {
+			if(xmlhttp.status === 200) {
+				successCallback(JSON.parse(xmlhttp.responseText));
+			} else {
+				failureCallback();
+			}
+		}
+	};
+	xmlhttp.open("POST", url, false);
+	xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+	// xmlhttp.send(fdata);
+	xmlhttp.send(params);
 };
 
 //-----------------------------------------------------------------------

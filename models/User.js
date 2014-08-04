@@ -78,4 +78,11 @@ UserSchema.methods.logLogin = function() {
 	});
 };
 
+UserSchema.methods.toJSON = function() {
+	var obj = this.toObject();
+	delete obj.password_hash;
+	delete obj.password_length;
+	return obj;
+};
+
 module.exports = mongoose.model('User', UserSchema);
