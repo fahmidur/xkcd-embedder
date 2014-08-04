@@ -325,14 +325,14 @@ XKCD.prototype.syncFavorites = function() {
 			XKCD_Embedder.getJSON(self.serverURL + '/' + favoriteNum,
 			function succ(data) {
 				self.favorites[data.num] = data;
-				console.log('remote favorite: ', data);
+				// console.log('remote favorite: ', data);
 			},
 			function err() {
 				console.log('remote favorite: ', faves[k], 'could not be fetched');
 			});
 		}
-		console.log('self.favorites = ', self.favorites);
-		console.log('remoteFavorites = ', remoteFavorites);
+		// console.log('self.favorites = ', self.favorites);
+		// console.log('remoteFavorites = ', remoteFavorites);
 		for(var k in self.favorites) {
 			if(remoteFavorites[k]) { continue; }
 			XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/'+k, 
@@ -350,6 +350,7 @@ XKCD.prototype.syncFavorites = function() {
 
 	self.favoriteResults = {};
 	self.saveFavorites();
+	self.populateFavorites();
 };
 XKCD.prototype.updateUserDiv = function() {
 	var self = this;
@@ -503,6 +504,15 @@ XKCD.prototype.populateFavorites = function() {
 			console.log('removing... ', id);
 			delete self.favorites[id];
 			console.log(self.favorites);
+			if(self.user) {
+				XKCD_Embedder.getJSON(self.serverURL + '/favorites/del/'+id,
+				function succ(data) {
+					console.log('deleted remotely ', data);
+				},
+				function err() {
+					console.log('failed to delete ', id);
+				});
+			}
 			self.saveFavorites();
 			donotGo = true;
 		});
@@ -554,7 +564,18 @@ XKCD.prototype.addToFavorites = function() {
 	var self = this;
 	//nevermind, let us just store everything
 	self.favorites[self.data.num] = self.data;
+
+	if(self.user) {
+		XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/' + self.data.num, 
+		function succ(data) {
+			console.log('added remotely: ', data);
+			self.saveFavorites();
+		}, function fail() {
+			console.log('failed to add to favorites remotely');
+		});
+	}
 	self.saveFavorites();
+	
 };
 XKCD.prototype.getFavorites = function() {
 	var self = this;
