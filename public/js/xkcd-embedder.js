@@ -309,6 +309,48 @@ XKCD.prototype.render = function() {
 		self.element.innerHTML = prevHTML;
 	});
 };
+XKCD.prototype.syncFavorites = function() {
+	console.log('fetching my favorites...');
+	var self = this;
+	XKCD_Embedder.getJSON(self.serverURL + '/favorites', 
+	function success(favoriteList) {
+		var remoteFavorites = {};
+		console.log('favorites = ', favoriteList);
+		for(var i in favoriteList) {
+			var favoriteNum = favoriteList[i];
+
+			remoteFavorites[favoriteNum] = true; // set
+			if(self.favorites[favoriteNum]) { continue; }
+			
+			XKCD_Embedder.getJSON(self.serverURL + '/' + favoriteNum,
+			function succ(data) {
+				self.favorites[data.num] = data;
+				console.log('remote favorite: ', data);
+			},
+			function err() {
+				console.log('remote favorite: ', faves[k], 'could not be fetched');
+			});
+		}
+		console.log('self.favorites = ', self.favorites);
+		console.log('remoteFavorites = ', remoteFavorites);
+		for(var k in self.favorites) {
+			if(remoteFavorites[k]) { continue; }
+			XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/'+k, 
+			function succ(data) {
+				console.log(data);
+			}, 
+			function() {
+				console.log('error adding ' + k + ' to remote');
+			});
+		}
+	},
+	function failure() {
+		console.log('failed to get favorites');
+	});
+
+	self.favoriteResults = {};
+	self.saveFavorites();
+};
 XKCD.prototype.updateUserDiv = function() {
 	var self = this;
 	if(self.user) {
@@ -327,7 +369,7 @@ XKCD.prototype.checkLoginState = function() {
 		if(data.isLoggedIn) {
 			self.user = data.user;
 			self.updateUserDiv();
-			
+			self.syncFavorites();
 		}
 	}, function() {
 		console.log('is logged in check failed');
@@ -361,6 +403,8 @@ XKCD.prototype.loginAction = function(e) {
 
 			self.c.loginDiv.style.display = 'none';
 			self.c.logoutDiv.style.display = 'block';
+
+			self.syncFavorites();
 		} else {
 			self.c.loginPassword.value = '';
 			self.c.loginPassword.focus();

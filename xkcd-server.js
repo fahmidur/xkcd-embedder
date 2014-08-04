@@ -129,6 +129,56 @@ var xkcd = (function() {
 		});
 	}
 
+	function getFavorites(req, res) {
+		if(!(req.session && req.session.user)) {
+			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+		}
+		models.User.findOne(req.session.user.email, function(err, user) {
+			if(err || !user) {
+				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+			}
+			res.end(JSON.stringify(user.favorites_XKCD));
+		});
+	};
+
+	function addFavorite(req, res) {
+		if(!(req.session && req.session.user)) {
+			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+		}
+		models.User.findOne(req.session.user.email, function(err, user) {
+			if(err || !user) {
+				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+			}
+			user.favorites_XKCD.addToSet(req.params.num);
+			user.save(function(err) {
+				if(err) {
+					res.end(JSON.stringify({ok: false, error: err}));
+				} else {
+					res.end(JSON.stringify({ok: true, added: req.params.num }));
+				}
+			});
+		});
+	}
+
+	function delFavorite(req, res) {
+		if(!(req.session && req.session.user)) {
+			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+		}
+		models.User.findOne(req.session.user.email, function(err, user) {
+			if(err || !user) {
+				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+			}
+			user.favorites_XKCD.pull(req.params.num);
+			user.save(function(err) {
+				if(err) {
+					res.end(JSON.stringify({ok: false, error: err}));
+				} else {
+					res.end(JSON.stringify({ok: true, deleted: req.params.num }));
+				}
+			});
+		});
+	}
+
 	function register(req, res) {
 		var email = req.body.email;
 		var password = req.body.password;
@@ -217,7 +267,11 @@ var xkcd = (function() {
 		register: register,
 		login: login,
 		logout: logout,
-		isLoggedIn: isLoggedIn
+		isLoggedIn: isLoggedIn,
+
+		getFavorites: getFavorites,
+		addFavorite: addFavorite,
+		delFavorite: delFavorite
 	};
 })();
 
@@ -252,6 +306,9 @@ app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
 app.get('/logout', allowAccess, xkcd.logout);
 app.get('/isLoggedIn', allowAccess, xkcd.isLoggedIn);
+app.get('/favorites', allowAccess, xkcd.getFavorites);
+app.get('/favorites/add/:num(\\d+)', allowAccess, xkcd.addFavorite);
+app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.delFavorite);
 
 
 app.listen(app.get('port'), function() {

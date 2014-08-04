@@ -29,7 +29,9 @@ var UserSchema = Schema({
 	registered: { type: Date, default: Date.now },
 	last_login: { type: Date, default: Date.now },
 
-	isRoot: {type: Boolean, default: false}
+	isRoot: {type: Boolean, default: false},
+
+	favorites_XKCD: [Number]
 });
 
 UserSchema
