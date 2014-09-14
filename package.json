@@ -3,6 +3,7 @@
   "description": "An embedder of XKCDs",
   "author": "Syed Reza s.f.reza@gmail.com",
   "dependencies": {
+    "async": "^0.9.0",
     "body-parser": "^1.5.2",
     "connect-mongo": "^0.4.1",
     "crypto": "0.0.3",
