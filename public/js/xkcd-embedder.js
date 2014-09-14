@@ -302,8 +302,9 @@ XKCD.prototype.render = function() {
 		favoritesWindow.addEventListener('click', function(e) {
 			favoritesWindow.style.display = 'none';
 		});
-		self.checkLoginState();
-
+		if(self.user === null) {
+			self.checkLoginState();
+		}
 	}, function() {
 		console.log('Failed to load resource: ', this.url);
 		self.element.innerHTML = prevHTML;
@@ -312,25 +313,27 @@ XKCD.prototype.render = function() {
 XKCD.prototype.syncFavorites = function() {
 	console.log('fetching my favorites...');
 	var self = this;
-	XKCD_Embedder.getJSON(self.serverURL + '/favorites', 
+	self.favorites = self.getFavorites();
+	XKCD_Embedder.getJSON(self.serverURL + '/favorites',
 	function success(favoriteList) {
 		var remoteFavorites = {};
-		console.log('favorites = ', favoriteList);
+
 		for(var i in favoriteList) {
 			var favoriteNum = favoriteList[i];
 
 			remoteFavorites[favoriteNum] = true; // set
 			if(self.favorites[favoriteNum]) { continue; }
-			
+			console.log('Favorite('+favoriteNum+') FETCHING...');
 			XKCD_Embedder.getJSON(self.serverURL + '/' + favoriteNum,
 			function succ(data) {
 				self.favorites[data.num] = data;
-				// console.log('remote favorite: ', data);
+				console.log('New remote favorite('+favoriteNum+'): ', data);
 			},
 			function err() {
-				console.log('remote favorite: ', faves[k], 'could not be fetched');
+				console.error('New remote favorite('+favoriteNum+'): ', faves[k], 'could not be fetched');
 			});
 		}
+
 		// console.log('self.favorites = ', self.favorites);
 		// console.log('remoteFavorites = ', remoteFavorites);
 		for(var k in self.favorites) {
@@ -366,7 +369,7 @@ XKCD.prototype.updateUserDiv = function() {
 XKCD.prototype.checkLoginState = function() {
 	var self = this;
 	XKCD_Embedder.getJSON(self.serverURL + '/isLoggedIn', function(data) {
-		console.log('is logged in = ', data);
+		// console.log('is logged in = ', data);
 		if(data.isLoggedIn) {
 			self.user = data.user;
 			self.updateUserDiv();
@@ -505,9 +508,10 @@ XKCD.prototype.populateFavorites = function() {
 			delete self.favorites[id];
 			console.log(self.favorites);
 			if(self.user) {
+				console.log('*** DELETING ' + id);
 				XKCD_Embedder.getJSON(self.serverURL + '/favorites/del/'+id,
 				function succ(data) {
-					console.log('deleted remotely ', data);
+					console.log('******** Deleted remotely ', data);
 				},
 				function err() {
 					console.log('failed to delete ', id);
@@ -583,13 +587,16 @@ XKCD.prototype.getFavorites = function() {
 		self.favorites = {};
 	}
 	else {
+		console.log('** Fetching favorites from localStore. ');
 		self.favorites = JSON.parse(localStorage.getItem('favorites')) || {};
 	}
 	return self.favorites;
 };
 XKCD.prototype.saveFavorites = function() {
 	var self = this;
+
 	if(typeof(Storage) !== "undefined") {
+		console.log('** Saving favorites to localStore');
 		localStorage.setItem('favorites', JSON.stringify(self.favorites));
 	}
 };
