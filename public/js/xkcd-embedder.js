@@ -230,27 +230,25 @@ XKCD.prototype.render = function() {
 			}
 		});
 
-		window.setTimeout(function() {
-				var imgWidth = img.clientWidth;
-				self.c.imgWidth = imgWidth;
+		var imgWidth = img.clientWidth;
+		self.c.imgWidth = imgWidth;
 
-				var alt = document.createElement("div");
-				alt.className = 'xkcd-embed-alt';
-				alt.textContent = data.alt;
+		var alt = document.createElement("div");
+		alt.className = 'xkcd-embed-alt';
+		alt.textContent = data.alt;
+		self.c.alt = alt;
+		alt.style.display = "none";
+		self.element.appendChild(alt);
+
+		imgWrapper.addEventListener("click", function() {
+			if(alt.style.display === "none") {
+				imgWidth = img.clientWidth; self.c.imgWidth = imgWidth;
 				alt.style.width = (imgWidth - 10) + 'px';
+				alt.style.display = '';
+			} else {
 				alt.style.display = "none";
-				self.c.alt = alt;
-
-				self.element.appendChild(alt);
-
-				imgWrapper.addEventListener("click", function() {
-					if(alt.style.display === "none") {
-						alt.style.display = '';
-					} else {
-						alt.style.display = "none";
-					}
-				});
-		}, 1000);
+			}
+		});
 
 		btBack.addEventListener('click', function() {
 			if(self.historyStack.length === 0) { return; }
@@ -327,10 +325,10 @@ XKCD.prototype.syncFavorites = function() {
 			XKCD_Embedder.getJSON(self.serverURL + '/' + favoriteNum,
 			function succ(data) {
 				self.favorites[data.num] = data;
-				console.log('New remote favorite('+favoriteNum+'): ', data);
+				console.log('** New remote favorite('+favoriteNum+'): ', data);
 			},
 			function err() {
-				console.error('New remote favorite('+favoriteNum+'): ', faves[k], 'could not be fetched');
+				console.error('** New remote favorite('+favoriteNum+'): ', faves[k], 'could not be fetched');
 			});
 		}
 
@@ -374,6 +372,8 @@ XKCD.prototype.checkLoginState = function() {
 			self.user = data.user;
 			self.updateUserDiv();
 			self.syncFavorites();
+		} else {
+			delete self.user;
 		}
 	}, function() {
 		console.log('is logged in check failed');
@@ -504,7 +504,7 @@ XKCD.prototype.populateFavorites = function() {
 
 		btRemove.addEventListener('click', function(e) {
 			var id = this.parentNode.dataset.id;
-			console.log('removing... ', id);
+			console.log('REMOVING... ', id);
 			delete self.favorites[id];
 			console.log(self.favorites);
 			if(self.user) {
