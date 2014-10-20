@@ -293,7 +293,11 @@ XKCD.prototype.render = function() {
 		btListFavorites.addEventListener('click', function(e) {
 			self.favoriteResults = {};
 			self.c.input.value = "";
-			self.populateFavorites();
+			if(self.user) {
+				self.syncFavorites();
+			} else {
+				self.populateFavorites();
+			}
 			favoritesWindow.style.display = 'block';
 		});
 
@@ -447,7 +451,6 @@ XKCD.prototype.populateFavorites = function() {
 	// 	favoritesWindow.style.width = '100%';
 	// }, 50);
 
-	self.getFavorites();
 	console.log('favorites = ', self.favorites);
 
 	var inputWrapper = self.c.inputWrapper;
