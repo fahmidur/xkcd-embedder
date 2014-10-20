@@ -629,12 +629,6 @@ XKCD_Embedder.getJSON = function(url, successCallback, failureCallback) {
 };
 XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
 	var xmlhttp = new XMLHttpRequest();
-	// var fdata = new FormData();
-	// for(var k in data) {
-	// 	console.log(k, ' => ', data[k]);
-	// 	fdata.append(k, data[k]);
-	// }
-	// console.log('FORM DATA = ', fdata);
 	var params = "";
 	for(var k in data) {
 		console.log(k, ' => ', data[k]);
@@ -658,5 +652,4 @@ XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
 };
 
 //-----------------------------------------------------------------------
-// var xkcd = new XKCD_Embedder('http://xkcd-embedder.fahmidur.us');
-var xkcd = new XKCD_Embedder('http://localhost:4567');
+var xkcd = new XKCD_Embedder('http://<%= host.name %>:<%= host.port %>');
