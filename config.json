@@ -1,0 +1,16 @@
+{
+	"development": {
+		"host": {
+			"name": "localhost",
+			"port": 4567
+		}
+		
+	},
+	"production": {
+		"host": {
+			"name": "xkcd-embedder.fahmidur.us",
+			"port": 80
+		}
+		
+	}
+}

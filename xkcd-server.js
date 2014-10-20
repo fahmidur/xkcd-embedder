@@ -7,9 +7,18 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var models = require('./models');
 var async = require('async');
+var fs = require('fs');
+
+
+config = JSON.parse(fs.readFileSync('config.json'));
+env = process.env.NODE_ENV || "development";
+config = config[env]
 
 
 var app = express();
+app.set('view engine', 'ejs');
+app.set('views', './');
+
 
 var mongodbAddress = 'localhost';
 var mongodbName = 'xkcd-embedder';
@@ -295,6 +304,11 @@ app.get('/seqCap/fetch', allowAccess, seqCap.fetch);
 app.post('/seqCap/check', allowAccess, seqCap.check);
 
 
+app.get('/js/xkcd-embedder.js', allowAccess, function(req, res) {
+	res.type('text/javascript');
+	res.render('public/js/xkcd-embedder.js.ejs', {host: config.host });
+});
+
 app.use('/', allowAccess, express.static(__dirname + '/public'));
 app.use('/js', allowAccess, express.static(__dirname + '/public/js'));
 app.use('/css', allowAccess, express.static(__dirname + '/public/css'));
@@ -312,5 +326,5 @@ app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.delFavorite);
 
 
 app.listen(app.get('port'), function() {
-	console.log('Listening on http://localhost:' + app.get('port'));
+	console.log('Listening on http://'+config.host.name+':' + config.host.port);
 });
