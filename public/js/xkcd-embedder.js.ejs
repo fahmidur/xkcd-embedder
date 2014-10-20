@@ -313,7 +313,7 @@ XKCD.prototype.render = function() {
 	});
 };
 XKCD.prototype.syncFavorites = function() {
-	console.log('fetching my favorites...');
+	console.log('FETCHING MY REMOTE FAVORITES...');
 	var self = this;
 	self.favorites = self.getFavorites();
 	XKCD_Embedder.getJSON(self.serverURL + '/favorites',
