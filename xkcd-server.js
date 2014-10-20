@@ -112,7 +112,7 @@ var xkcd = (function() {
 		var password = req.body.password;
 
 		console.log('** login-email: ', email);
-		console.log('** login-passwod: ', password);
+		console.log('** login-password: ', password);
 
 		models.User.findOne({email: email}, function(err, user) {
 			if(err || !user) {
