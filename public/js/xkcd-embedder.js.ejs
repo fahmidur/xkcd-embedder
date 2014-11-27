@@ -650,7 +650,6 @@ XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
 	};
 	xmlhttp.open("POST", url, false);
 	xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-	// xmlhttp.send(fdata);
 	xmlhttp.send(params);
 };
 
