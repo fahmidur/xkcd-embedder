@@ -1,4 +1,4 @@
-upstream backend {
+upstream xkcd_embedder_backend {
     server 127.0.0.1:4567;
 }
 server {
@@ -7,6 +7,6 @@ server {
 	charset UTF-8;
 
 	location / {
-		proxy_pass http://backend;
+		proxy_pass http://xkcd_embedder_backend;
 	}
 }
