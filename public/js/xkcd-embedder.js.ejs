@@ -587,11 +587,13 @@ XKCD.prototype.addToFavorites = function() {
 XKCD.prototype.getFavorites = function() {
 	var self = this;
 	if(typeof(Storage) === "undefined") {
+		console.log("getFavorites. type of Storage undefined")
 		self.favorites = {};
 	}
 	else {
-		console.log('** Fetching favorites from localStore. ');
+		console.log('** getFavorites. Fetching favorites from localStore. ');
 		self.favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+		console.log("** getFavorites. Fetched favorites: ", self.favorites);
 	}
 	return self.favorites;
 };
