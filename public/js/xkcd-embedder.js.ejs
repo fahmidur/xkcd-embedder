@@ -295,9 +295,9 @@ XKCD.prototype.render = function() {
 			self.c.input.value = "";
 			if(self.user) {
 				self.syncFavorites();
-			} else {
-				self.populateFavorites();
 			}
+			self.getFavorites();
+			self.populateFavorites();
 			favoritesWindow.style.display = 'block';
 		});
 
