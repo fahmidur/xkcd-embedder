@@ -324,7 +324,6 @@ app.get('/favorites', allowAccess, xkcd.getFavorites);
 app.get('/favorites/add/:num(\\d+)', allowAccess, xkcd.addFavorite);
 app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.delFavorite);
 
-
 app.listen(app.get('port'), function() {
 	console.log('Listening on http://'+config.host.name+':' + config.host.port);
 });

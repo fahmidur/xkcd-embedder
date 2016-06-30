@@ -1,2 +1,2 @@
 #!/usr/bin/env zsh
-node-supervisor -e 'js|ejs' xkcd-server.js
+nodemon xkcd-server.js
