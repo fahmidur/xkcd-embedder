@@ -2,8 +2,7 @@ var express = require('express');
 var request = require('request');
 var prettyjson = require('prettyjson');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var mongoose = require('mongoose');
+var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var models = require('./models');
 var async = require('async');
@@ -14,27 +13,15 @@ config = JSON.parse(fs.readFileSync('config.json'));
 env = process.env.NODE_ENV || "development";
 config = config[env]
 
-
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
 
+app.use(cookieSession({
+  name: 'session',
+  keys: [conf.hashes.key1, conf.hashes.key2]
+}))
 
-var mongodbAddress = 'localhost';
-var mongodbName = 'xkcd-embedder';
-
-mongoose.connect('mongodb://' + mongodbAddress + '/' + mongodbName);
-
-
-app.use(session({
-	secret: 'xkcd-is-awseome',
-	saveUninitialized: true,
-	resave: true,
-	store: new MongoStore({
-		url: 'mongodb://' + mongodbAddress,
-		db: mongodbName
-	})
-}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
