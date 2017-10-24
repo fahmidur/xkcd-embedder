@@ -11,7 +11,9 @@ var fs = require('fs');
 
 config = JSON.parse(fs.readFileSync('config.json'));
 env = process.env.NODE_ENV || "development";
-config = config[env]
+config = config[env];
+
+console.log('config = ', prettyjson.render(config));
 
 var app = express();
 app.set('view engine', 'ejs');
@@ -19,7 +21,7 @@ app.set('views', './');
 
 app.use(cookieSession({
   name: 'session',
-  keys: [conf.hashes.key1, conf.hashes.key2]
+  keys: [config.hashes.key1, config.hashes.key2]
 }))
 
 app.use(bodyParser.json());

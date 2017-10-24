@@ -1,1 +1,1 @@
-exports.User = require('./User.js');
+exports.User = require('./user.js');
