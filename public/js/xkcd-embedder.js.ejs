@@ -153,8 +153,8 @@ XKCD.prototype.render = function() {
 		self.c.userDiv = userDiv;
 
 		
-		//------------- login div
-		var loginDiv = document.createElement('div');
+		//--- Login div
+		var loginDiv = document.createElement('form');
 		userDiv.appendChild(loginDiv);
 		self.c.loginDiv = loginDiv;
 
@@ -180,8 +180,64 @@ XKCD.prototype.render = function() {
 		loginDiv.appendChild(loginSubmit);
 		self.c.loginSubmit = loginSubmit;
 
+    var loginToRegister = document.createElement('a');
+    loginToRegister.className = 'toggle';
+    loginToRegister.textContent = '-> Register';
+    loginDiv.appendChild(loginToRegister);
+    loginToRegister.addEventListener('click', function(e) {
+      self.c.loginDiv.style = 'display:none';
+      self.c.regDiv.style = 'display:block';
+    });
+
+    loginDiv.addEventListener('submit', function(e) { 
+      e.preventDefault(); 
+      e.stopPropagation(); 
+      self.loginAction(); 
+    });
 		loginSubmit.addEventListener('click', function() { self.loginAction(); } );
 		//---------------
+
+    //--- Register div
+    var regDiv = document.createElement('form');
+    regDiv.style = 'display:none';
+    userDiv.appendChild(regDiv);
+    self.c.regDiv = regDiv;
+    
+    var regEmail = document.createElement('input');
+		regEmail.className = 'xkcd-embed-userDiv-input';
+    regEmail.setAttribute('type', 'email');
+    regEmail.setAttribute('placeholder', 'Email');
+    regEmail.setAttribute('required', 'true');
+    regDiv.appendChild(regEmail);
+
+    var regPassword = document.createElement('input');
+		regPassword.className = 'xkcd-embed-userDiv-input';
+    regPassword.setAttribute('type', 'password');
+    regPassword.setAttribute('placeholder', 'Password');
+    regPassword.setAttribute('required', 'true');
+    regDiv.appendChild(regPassword);
+
+    var regPassword2 = document.createElement('input');
+		regPassword2.className = 'xkcd-embed-userDiv-input';
+    regPassword2.setAttribute('type', 'password');
+    regPassword2.setAttribute('placeholder', 'Password Confirm');
+    regPassword2.setAttribute('required', 'true');
+    regDiv.appendChild(regPassword2);
+
+		var regSubmit = document.createElement('button');
+		regSubmit.className = 'xkcd-embed-userDiv-btn';
+		regSubmit.textContent = 'Register';
+		regDiv.appendChild(regSubmit);
+		self.c.regSubmit = regSubmit;
+
+    var regToLogin = document.createElement('a');
+    regToLogin.className = 'toggle';
+    regToLogin.textContent = '-> Login';
+    regDiv.appendChild(regToLogin);
+    regToLogin.addEventListener('click', function(e) {
+      self.c.regDiv.style = 'display:none';
+      self.c.loginDiv.style = 'display:block';
+    });
 
 		//------------ logout div
 		var logoutDiv = document.createElement('div');
