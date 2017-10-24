@@ -12,6 +12,8 @@ var XKCD = function(element, serverURL) {
 	this.favoriteResults = {};
 	this.user = null;
 
+  this.loginEnabled = false;
+
 	this.render();
 };
 XKCD.prototype.render = function() {
@@ -139,8 +141,6 @@ XKCD.prototype.render = function() {
 		self.element.appendChild(favoritesWindow);
 		self.c.favoritesWindow = favoritesWindow;
 
-		
-
 		//----------------Start of User Div-----------------------------------------
 		var userDivWrapper = document.createElement('div');
 		userDivWrapper.className = 'xkcd-embed-userDivWrapper';
@@ -152,7 +152,7 @@ XKCD.prototype.render = function() {
 		userDivWrapper.appendChild(userDiv);
 		self.c.userDiv = userDiv;
 
-		
+	  if(self.loginEnabled) {	
 		//--- Login div
 		var loginDiv = document.createElement('form');
 		userDiv.appendChild(loginDiv);
@@ -249,8 +249,8 @@ XKCD.prototype.render = function() {
 		logoutDiv.appendChild(logoutLink);
 		self.c.logoutLink = logoutLink;
 		logoutLink.addEventListener('click', function() { self.logoutAction(); });
-
 		//----------------------------
+    } // End if login Enabled
 
 		//-------End of User Div----------------------------------------------------
 
@@ -686,7 +686,7 @@ XKCD_Embedder.getJSON = function(url, successCallback, failureCallback) {
 			}
 		}
 	};
-	xmlhttp.open("GET", url, false);
+	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 };
 XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
@@ -707,7 +707,7 @@ XKCD_Embedder.postJSON = function(url, data, successCallback, failureCallback) {
 			}
 		}
 	};
-	xmlhttp.open("POST", url, false);
+	xmlhttp.open("POST", url, true);
 	xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 	xmlhttp.send(params);
 };
