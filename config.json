@@ -4,9 +4,20 @@
 			"name": "localhost",
 			"port": 4567
 		},
-		"knex": {
-      "client": "sqlite3",
-      "connection": "database.sqlite",
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "aab5ffbbfcd02c34afb12c4f4b219338",
+        "database": "xkcd_embedder_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
       "migrations": {
         "tableName": "knex_migrations"
       }
@@ -18,9 +29,20 @@
 			"name": "xkcd-embedder.fahmidur.us",
 			"port": 80
 		},
-		"knex": {
-      "client": "sqlite3",
-      "connection": "database.sqlite",
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "aab5ffbbfcd02c34afb12c4f4b219338",
+        "database": "xkcd_embedder_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
       "migrations": {
         "tableName": "knex_migrations"
       }

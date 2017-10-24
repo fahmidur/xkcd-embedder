@@ -1,19 +1,31 @@
+var sharedLibs = {};
+sharedLibs.pj = sharedLibs.pj || require('prettyjson');
+sharedLibs.fs = sharedLibs.fs || require('fs');
+
+config = JSON.parse(sharedLibs.fs.readFileSync('config.json'));
+env = process.env.NODE_ENV || "development";
+config = config[env];
+console.log("config = \n---\n", sharedLibs.pj.render(config), "\n---\n");
+console.log("config.knex = \n---\n", sharedLibs.pj.render(config.knex), "\n---\n");
+
+sharedLibs.knex = sharedLibs.knex || require('knex')(config.knex);
+sharedLibs.bookshelf = sharedLibs.bookshelf || require('bookshelf')(sharedLibs.knex);
+sharedLibs.promise = sharedLibs.promise || require('bluebird');
+
+var models = require('./models')(sharedLibs);
+
+
 var express = require('express');
 var request = require('request');
-var prettyjson = require('prettyjson');
 var session = require('express-session');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
-var models = require('./models');
 var async = require('async');
-var fs = require('fs');
 
-
-config = JSON.parse(fs.readFileSync('config.json'));
-env = process.env.NODE_ENV || "development";
-config = config[env];
-
-console.log('config = ', prettyjson.render(config));
+//console.log('models.User = ', models.User);
+//models.User.where({email: 's.f.reza@gmail.com'}).fetch().then(function(user) {
+  //console.error('---- user = ', user); 
+//});
 
 var app = express();
 app.set('view engine', 'ejs');
@@ -112,18 +124,18 @@ var xkcd = (function() {
 		console.log('** login-email: ', email);
 		console.log('** login-password: ', password);
 
-		models.User.findOne({email: email}, function(err, user) {
-			if(err || !user) {
+		models.User.query({where: {email: email}}).fetch().then(function(user) {
+			if(!user) {
 				res.end(JSON.stringify({ok: false, error: 'User ' + email + ' not found'}));
 				return;
 			}
-			if(user.passwordMatches(password)) {
-				req.session.user = user;
-				user.logLogin(); // Updates the last login attribute
-				res.end( JSON.stringify({ ok: true, user: user}) );
-				return;
-			}
-			res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
+      if(!user.isPasswordCorrect(password)) {
+        res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
+        return;
+      }
+      req.session.user = user;
+      //user.logLogin(); // Updates the last login attribute
+      res.end( JSON.stringify({ ok: true, user: user}) );
 		});
 	}
 
