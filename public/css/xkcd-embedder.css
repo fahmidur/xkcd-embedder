@@ -94,6 +94,22 @@ a.xkcd-embed-title {
 	padding-top: 5px;
 	overflow: auto;
 }
+.xkcd-embed-userDiv form {
+  display: block;
+  border: 0px solid red;
+  margin: 0px;
+  padding: 0px;
+  overflow: auto;
+}
+.xkcd-embed-userDiv a.toggle {
+  float: right;
+  margin: 0px;
+  margin-left: 1em;
+  color: #fff;
+  padding: 3px;
+  font-size: x-small;
+  user-select: none;
+}
 .xkcd-embed-userDiv > div {
 	display: block;
 	float: left;
