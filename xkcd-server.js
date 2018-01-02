@@ -22,11 +22,6 @@ var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var async = require('async');
 
-//console.log('models.User = ', models.User);
-//models.User.where({email: 's.f.reza@gmail.com'}).fetch().then(function(user) {
-  //console.error('---- user = ', user); 
-//});
-
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
