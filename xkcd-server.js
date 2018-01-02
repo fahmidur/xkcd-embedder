@@ -29,7 +29,7 @@ app.set('views', './');
 app.use(cookieSession({
   name: 'session',
   keys: [config.hashes.key1, config.hashes.key2]
-}))
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -138,12 +138,12 @@ var xkcd = (function() {
 		if(!(req.session && req.session.user)) {
 			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
 		}
-		models.User.findOne(req.session.user.email, function(err, user) {
-			if(err || !user) {
-				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
-			}
-			res.end(JSON.stringify(user.favorites_XKCD));
-		});
+		//models.User.findOne(req.session.user.email, function(err, user) {
+			//if(err || !user) {
+				//return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+			//}
+			//res.end(JSON.stringify(user.favorites_XKCD));
+		//});
 	};
 
 	function addFavorite(req, res) {
@@ -185,68 +185,72 @@ var xkcd = (function() {
 	}
 
 	function register(req, res) {
-		var email = req.body.email;
-		var password = req.body.password;
+    var email = req.body.email;
+    var password = req.body.password;
+    var password2 = req.body.password2;
 
-		var user = new models.User({
-			email: email,
-		});
-		user.password = password;
-
-
-		var errors = [];
-		async.parallel([
-		function validatePresencePassword(callback) {
-			if(!password || password.match(/^\s+$/)) {
-				errors.push('Password is blank');
-			}
-			callback();
-		},
-		function validatePresenceEmail(callback) {
-			if(!email || email.match(/^\s+$/)) {
-				errors.push('Email is blank WTF!');
-			}
-			callback();
-		},
-		function validateEmailFormat(callback) {
-			if(email && !email.match(/^.+\@.+$/)) {
-				errors.push('Email format invalid');
-			}
-			callback();
-		},
-		function validateEmailUnique(callback) {
-			models.User.findOne({email: email}, function(err, user) {
-				if(user) {
-					errors.push('User email is taken');
-				}
-				callback();
-			});
-		},
-		function validateCaptchaPassed(callback) {
-			console.log(req.session);
-			if(!seqCap.isCorrect(req)) {
-				errors.push('Captcha answer is incorrect.');
-			}
-			callback();
-		}
+    var errors = [];
+    async.parallel([
+    function validatePresencePassword(callback) {
+      if(!password || password.match(/^\s+$/)) {
+        errors.push('Password is blank');
+      }
+      callback();
+    },
+    function validatePresencePassword2(callback) {
+      if(!password2 || password2.match(/^\s+$/)) {
+        errors.push('Password2 is blank');
+      }
+      callback();
+    },
+    function validatePasswordsMatch(callback) {
+      if(password != password2) {
+        errors.push('Passwords do not match');
+      }
+      callback();
+    },
+    function validatePresenceEmail(callback) {
+      if(!email || email.match(/^\s+$/)) {
+        errors.push('Email is blank');
+      }
+      callback();
+    },
+    function validateEmailFormat(callback) {
+      if(email && !email.match(/^.+\@.+$/)) {
+        errors.push('Email format invalid');
+      }
+      callback();
+    },
+    function validateEmailUnique(callback) {
+      models.User.where('email', email).count().then(function(count) {
+        if(count != 0) {
+          errors.push('User email is taken');
+        }
+        callback();
+      });
+    },
+		//function validateCaptchaPassed(callback) {
+			//console.log(req.session);
+			//if(!seqCap.isCorrect(req)) {
+				//errors.push('Captcha answer is incorrect.');
+			//}
+			//callback();
+		//}
 		], function() {
 			if(errors.length > 0) {
-				res.end(JSON.stringify({ok: false, errors: errors}));
-			} else {
-				user.save(function(err) {
-					if(err) {
-						res.end(JSON.stringify({ok: false, error: err}));
-					} else {
-						res.end(JSON.stringify({ok: true, user: user}));
-					}
-				});
+        res.json({ok: false, errors: errors});
+        return;
 			}
-
+      var user = new models.User;
+      user.set('email', email);
+      user.setPassword(password);
+      user.save().then(function() {
+        res.json({ok: true, user: user});
+      });
 		});
 	}
 
 	function isLoggedIn(req, res) {
-		// console.log('IS LOGGED IN. SESSION = ', req.session);
 		if(req.session && req.session.user) {
 			res.end(JSON.stringify({isLoggedIn: true, user: req.session.user }));
 		} else {

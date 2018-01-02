@@ -11,6 +11,11 @@ module.exports = function(sharedLibs, models) {
     return sharedLibs.bcrypt.compareSync(password, self.attributes.password_bcrypt);
   };
 
+  protoProps.setPassword = function(password) {
+    var self = this;
+    self.set('password_bcrypt', sharedLibs.bcrypt.hashSync(password));
+  };
+
   var classProps = {};
 
   sharedLibs.promise.promisifyAll(protoProps);
