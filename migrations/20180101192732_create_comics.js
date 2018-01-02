@@ -1,8 +1,11 @@
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('comics', function(table) {
+    table.increments('id').primary();
+    table.string('source');
     table.integer('xid');
     table.jsonb('data');
+    table.timestamps();
   }).then();
 };
 
