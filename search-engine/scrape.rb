@@ -3,18 +3,16 @@
 require 'open-uri'
 require 'json'
 
-f = File.open('listing.txt', 'w')
-limit = 1401
-(403..limit).each do |n|
-	# data = JSON.parse(open("http://xkcd.com/#{n}/info.0.json").read)
-
+f = File.open('listing2.txt', 'w')
+limit = 1936
+(1..limit).each do |n|
 	begin
-	f.puts open("http://xkcd.com/#{n}/info.0.json").read, "\n"
-	printf("%04d / %04d\n", n, limit)
-	rescue
-	printf("%04d / %04d\t[FAILED]\n", n, limit)
+    f.puts open("https://xkcd.com/#{n}/info.0.json").read, "\n"
+    printf("%04d / %04d\n", n, limit)
+	rescue => err
+    printf("%04d / %04d\t[FAILED] ERR = #{err}\n", n, limit)
 	end
-	# sleep(1)
-	# break
+  #sleep(1)
+  #break
 end
 f.close

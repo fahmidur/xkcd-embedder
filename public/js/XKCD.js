@@ -12,7 +12,7 @@ var XKCD = function(element, serverURL) {
 	this.favoriteResults = {};
 	this.user = null;
 
-  this.loginEnabled = false;
+  this.loginEnabled = true;
 
 	this.render();
 };
@@ -194,6 +194,7 @@ XKCD.prototype.render = function() {
       e.stopPropagation(); 
       self.loginAction(); 
     });
+
 		loginSubmit.addEventListener('click', function() { self.loginAction(); } );
 		//---------------
 
@@ -209,6 +210,7 @@ XKCD.prototype.render = function() {
     regEmail.setAttribute('placeholder', 'Email');
     regEmail.setAttribute('required', 'true');
     regDiv.appendChild(regEmail);
+    self.c.regEmail = regEmail;
 
     var regPassword = document.createElement('input');
 		regPassword.className = 'xkcd-embed-userDiv-input';
@@ -216,6 +218,7 @@ XKCD.prototype.render = function() {
     regPassword.setAttribute('placeholder', 'Password');
     regPassword.setAttribute('required', 'true');
     regDiv.appendChild(regPassword);
+    self.c.regPassword = regPassword;
 
     var regPassword2 = document.createElement('input');
 		regPassword2.className = 'xkcd-embed-userDiv-input';
@@ -223,12 +226,15 @@ XKCD.prototype.render = function() {
     regPassword2.setAttribute('placeholder', 'Password Confirm');
     regPassword2.setAttribute('required', 'true');
     regDiv.appendChild(regPassword2);
+    self.c.regPassword2 = regPassword2;
 
 		var regSubmit = document.createElement('button');
 		regSubmit.className = 'xkcd-embed-userDiv-btn';
 		regSubmit.textContent = 'Register';
 		regDiv.appendChild(regSubmit);
 		self.c.regSubmit = regSubmit;
+
+		regSubmit.addEventListener('click', function() { self.regAction(); } );
 
     var regToLogin = document.createElement('a');
     regToLogin.className = 'toggle';
@@ -391,7 +397,6 @@ XKCD.prototype.syncFavorites = function() {
 				console.error('** New remote favorite('+favoriteNum+'): ', faves[k], 'could not be fetched');
 			});
 		}
-
 		// console.log('self.favorites = ', self.favorites);
 		// console.log('remoteFavorites = ', remoteFavorites);
 		for(var k in self.favorites) {
@@ -451,6 +456,20 @@ XKCD.prototype.logoutAction = function(e) {
 	});
 
 	self.updateUserDiv();
+};
+XKCD.prototype.regAction = function(e) {
+  var self = this;
+  console.log('registering... ');
+  
+  XKCD_Embedder.postJSON(self.serverURL + '/register', {
+    email: self.c.regEmail.value, 
+    password: self.c.regPassword.value,
+    password2: self.c.regPassword2.value,
+  }, function success(data) {
+    console.log('---- response. data = ', data);
+  }, function failure() {
+    console.error('Registration Failed');
+  });
 };
 XKCD.prototype.loginAction = function(e) {
 	console.log('logging in...');
