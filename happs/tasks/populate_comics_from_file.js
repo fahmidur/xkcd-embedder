@@ -1,44 +1,58 @@
 var readline = require('readline');
 var fs = require('fs');
+var stream = require('stream');
+var readline = require('readline');
 
 module.exports = function(config, sharedLibs, models) {
   return function task(args, done) {
     console.log('--- populate_comics_from_file.js. args = ', args);
     var fpath = args[0];
     
-    var comics = {};
-    var buf = "";
-    function process(str) {
-      buf += str;
-      var arr = buf.split("\n");
-      var didx = [];
-      var obj;
-      for(var i = 0; i < arr.length; i++) {
-        try { obj = JSON.parse(arr[i]); } catch(e) { obj = null; }
-        if(obj) {
-          didx.push(i);
-          //console.log('OBJECT = ', obj.num);
-          if(comics[obj.num]) {
-            console.error('ALREADY FOUND. obj.num = ', obj.num, 'comics.bla = ', comics[obj.num]);
-          }
-          comics[obj.num] = obj;
-        }
-      }
-      for(var i = 0; i < didx.length; i++) {
-        arr.splice(didx[i], 1);
-      }
-      buf = arr.join("\n");
-    }
-
     var istream = fs.createReadStream(fpath);
-    istream.on('data', function(chunk) {
-      console.log('--- chunk = ', chunk, ' length = ', chunk.length);
-      var str = new String(chunk);
-      process(str);
+    var ostream = new stream;
+    var rl = readline.createInterface(istream, ostream);
+
+    rl.on('line', function(line) {
+      if(line.length == 0) {
+        return;
+      }
+      var obj = JSON.parse(line);
+      console.log('=== obj = ');
+      console.log(obj);
+      console.log('===');
+      saveComic(obj);
     });
 
-    istream.on('close', function() {
-      done();
+    var finished_timeout = null;
+
+    function saveComic(obj) {
+      models.Comic.where({xid: obj.num, source: 'xkcd'}).fetch().then(function(comic) {
+        if(!comic) {
+          comic = models.Comic.forge({
+            xid: obj.num,
+            source: 'xkcd',
+          });
+        }
+        comic.set('data', obj);
+        console.log('=== calling save');
+        comic.save().error(function(error) {
+          console.error('--- on-error. error = ', error);
+        }).catch(function(error) {
+          console.error('--- on-catch. error = ', error);
+        }).finally(function() {
+          console.log('=== comic = ', comic);
+          if(finished_timeout) {
+            clearTimeout(finished_timeout);
+          }
+          finished_timeout = setTimeout(function() {
+            done();
+          }, 1000);
+        });
+      });
+    }
+
+    rl.on('close', function() {
+      //done(); // This is premature
     });
 
   };
