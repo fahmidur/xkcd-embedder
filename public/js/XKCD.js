@@ -180,14 +180,14 @@ XKCD.prototype.render = function() {
 		loginDiv.appendChild(loginSubmit);
 		self.c.loginSubmit = loginSubmit;
 
-    var loginToRegister = document.createElement('a');
-    loginToRegister.className = 'toggle';
-    loginToRegister.textContent = '-> Register';
-    loginDiv.appendChild(loginToRegister);
-    loginToRegister.addEventListener('click', function(e) {
-      self.c.loginDiv.style = 'display:none';
-      self.c.regDiv.style = 'display:block';
+    var loginToReg = document.createElement('a');
+    loginToReg.className = 'toggle';
+    loginToReg.textContent = '-> Register';
+    loginDiv.appendChild(loginToReg);
+    loginToReg.addEventListener('click', function(e) {
+      self.evLoginToReg();
     });
+    self.c.loginToReg = loginToReg;
 
     loginDiv.addEventListener('submit', function(e) { 
       e.preventDefault(); 
@@ -241,9 +241,9 @@ XKCD.prototype.render = function() {
     regToLogin.textContent = '-> Login';
     regDiv.appendChild(regToLogin);
     regToLogin.addEventListener('click', function(e) {
-      self.c.regDiv.style = 'display:none';
-      self.c.loginDiv.style = 'display:block';
+      self.evRegToLogin();
     });
+    self.c.regToLogin = regToLogin;
 
 		//------------ logout div
 		var logoutDiv = document.createElement('div');
@@ -374,6 +374,16 @@ XKCD.prototype.render = function() {
 		self.element.innerHTML = prevHTML;
 	});
 };
+XKCD.prototype.evRegToLogin = function() {
+  var self = this;
+  self.c.regDiv.style = 'display:none';
+  self.c.loginDiv.style = 'display:block';
+};
+XKCD.prototype.evLoginToReg = function() {
+  var self = this;
+  self.c.loginDiv.style = 'display:none';
+  self.c.regDiv.style = 'display:block';
+};
 XKCD.prototype.syncFavorites = function() {
 	console.log('FETCHING MY REMOTE FAVORITES...');
 	var self = this;
@@ -467,6 +477,14 @@ XKCD.prototype.regAction = function(e) {
     password2: self.c.regPassword2.value,
   }, function success(data) {
     console.log('---- response. data = ', data);
+    if(!data.ok) {
+      alert("Registration Failed:\n"+data.errors.join("\n"));
+      return;
+    }
+    self.c.loginEmail.value = data.user.email;
+    self.evRegToLogin();
+    alert("OK. Now try to login");
+    self.c.loginPassword.focus();
   }, function failure() {
     console.error('Registration Failed');
   });

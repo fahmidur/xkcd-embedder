@@ -229,6 +229,7 @@ var xkcd = (function() {
         callback();
       });
     },
+    // TODO: At the moment we have no captcha, this is really bad
 		//function validateCaptchaPassed(callback) {
 			//console.log(req.session);
 			//if(!seqCap.isCorrect(req)) {
