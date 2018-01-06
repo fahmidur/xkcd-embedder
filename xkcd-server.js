@@ -135,9 +135,9 @@ var xkcd = (function() {
         res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
         return;
       }
-      req.session.user = user.attributes;
+      req.session.user = user.publicAttributes();
       //user.logLogin(); // Updates the last login attribute
-      res.end( JSON.stringify({ ok: true, user: user}) );
+      res.json({ok: true, user: req.session.user});
 		});
 	}
 

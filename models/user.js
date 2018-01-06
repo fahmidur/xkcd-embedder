@@ -16,6 +16,14 @@ module.exports = function(sharedLibs, models) {
     self.set('password_bcrypt', sharedLibs.bcrypt.hashSync(password));
   };
 
+  protoProps.publicAttributes = function() {
+    var self = this;
+    return {
+      id: self.attributes.id,
+      email: self.attributes.email,
+    };
+  };
+
   var classProps = {};
 
   sharedLibs.promise.promisifyAll(protoProps);
