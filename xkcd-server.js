@@ -18,7 +18,6 @@ var models = require('./models')(sharedLibs);
 var express = require('express');
 var request = require('request');
 var session = require('express-session');
-var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var async = require('async');
 
@@ -26,10 +25,18 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
 
-app.use(cookieSession({
-  name: 'session',
-  keys: [config.hashes.key1, config.hashes.key2]
+app.use(session({
+  name: 'xkcd_embedder.sid',
+  secret: config.hashes.join(''),
+  saveUninitialized: false, // Do not save sessions that are new but not modified
+  resave: true, // Do not write session back to Redis if it did not change
+  rolling: true,
 }));
+
+app.use(function(req, res, next) {
+  console.log('--- session = ', (req.session));
+  next();
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -128,7 +135,7 @@ var xkcd = (function() {
         res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
         return;
       }
-      req.session.user = user;
+      req.session.user = user.attributes;
       //user.logLogin(); // Updates the last login attribute
       res.end( JSON.stringify({ ok: true, user: user}) );
 		});
@@ -136,8 +143,9 @@ var xkcd = (function() {
 
 	function getFavorites(req, res) {
 		if(!(req.session && req.session.user)) {
-			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+			return res.json({ok: false, errors: ['not logged in']});
 		}
+    return res.json({ok: false, errors: ['not implemented']});
 		//models.User.findOne(req.session.user.email, function(err, user) {
 			//if(err || !user) {
 				//return res.end(JSON.stringify({ok: false, error: 'user not found'}));
@@ -253,20 +261,23 @@ var xkcd = (function() {
 
 	function isLoggedIn(req, res) {
 		if(req.session && req.session.user) {
-			res.end(JSON.stringify({isLoggedIn: true, user: req.session.user }));
+			res.json({isLoggedIn: true, user: req.session.user });
 		} else {
-			res.end(JSON.stringify({isLoggedIn: false}));
+			res.json({isLoggedIn: false});
 		}
 	}
 
+  function seeSession(req, res) {
+    res.json(req.session);
+  }
+
 	function logout(req, res) {
 		if(req.session && req.session.user) {
-			// res.end('goodbye ' + req.session.user.email);
-			res.end(JSON.stringify({ok: true, user_email: req.session.user.email }));
+			res.json({ok: true, user_email: req.session.user.email });
 			req.session.destroy();
 		}
 		else {
-			res.end(JSON.stringify({ok: false}));
+			res.json({ok: false});
 		}
 	}
 
@@ -278,6 +289,7 @@ var xkcd = (function() {
 		login: login,
 		logout: logout,
 		isLoggedIn: isLoggedIn,
+    seeSession: seeSession,
 
 		getFavorites: getFavorites,
 		addFavorite: addFavorite,
@@ -321,6 +333,7 @@ app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
 app.get('/logout', allowAccess, xkcd.logout);
 app.get('/isLoggedIn', allowAccess, xkcd.isLoggedIn);
+app.get('/seeSession', allowAccess, xkcd.seeSession);
 app.get('/favorites', allowAccess, xkcd.getFavorites);
 app.get('/favorites/add/:num(\\d+)', allowAccess, xkcd.addFavorite);
 app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.delFavorite);

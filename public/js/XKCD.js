@@ -182,7 +182,7 @@ XKCD.prototype.render = function() {
 
     var loginToReg = document.createElement('a');
     loginToReg.className = 'toggle';
-    loginToReg.textContent = '-> Register';
+    loginToReg.textContent = 'Register';
     loginDiv.appendChild(loginToReg);
     loginToReg.addEventListener('click', function(e) {
       self.evLoginToReg();
@@ -238,7 +238,7 @@ XKCD.prototype.render = function() {
 
     var regToLogin = document.createElement('a');
     regToLogin.className = 'toggle';
-    regToLogin.textContent = '-> Login';
+    regToLogin.textContent = 'Login';
     regDiv.appendChild(regToLogin);
     regToLogin.addEventListener('click', function(e) {
       self.evRegToLogin();
@@ -442,14 +442,16 @@ XKCD.prototype.updateUserDiv = function() {
 XKCD.prototype.checkLoginState = function() {
 	var self = this;
 	XKCD_Embedder.getJSON(self.serverURL + '/isLoggedIn', function(data) {
-		// console.log('is logged in = ', data);
-		if(data.isLoggedIn) {
-			self.user = data.user;
-			self.updateUserDiv();
-			self.syncFavorites();
-		} else {
-			delete self.user;
-		}
+    console.log('checkLoginState. data = ', data);
+    if(data.isLoggedIn) {
+      console.log('checkLoginState. IS logged in');
+      self.user = data.user;
+      self.updateUserDiv();
+      self.syncFavorites();
+    } else {
+      console.log('checkLoginState. NOT logged in');
+      delete self.user;
+    }
 	}, function() {
 		console.log('is logged in check failed');
 	});
@@ -702,13 +704,16 @@ XKCD.prototype.saveFavorites = function() {
 XKCD.count = 0;
 
 var XKCD_Embedder = function(serverURL) {
+  var self = this;
+
 	// TODO insert stylesheet
 	
 	var ar = document.querySelectorAll('.xkcd-embed');
-	var xkcds = new Array();
+	self.xkcds = new Array();
 	for(var i = 0; i < ar. length; ++i) {
-		xkcds.push(new XKCD(ar[i], serverURL));
+		self.xkcds.push(new XKCD(ar[i], serverURL));
 	}
+
 };
 
 //--- static funcs ---
