@@ -57,12 +57,11 @@ var xkcd = (function() {
 	var errorJSON = JSON.stringify({error: true});
 
 	function getURL(opt) {
-		if(opt.id && cache[opt.id]) { return opt.res.end(cache[opt.id]); }
+		if(opt.id && cache[opt.id]) { return opt.res.json({ok: true, data: cache[opt.id]}); }
 
-		// console.log('NEW REQUEST', new Date());
 		request({url: opt.url, json: true}, function(error, response, body) {
 			if(!error && response.statusCode === 200) {
-				cache[body.num] = JSON.stringify(body);
+				cache[body.num] = body;
 				opt.successCallback(opt.res, body);
 			} else {
 				opt.failureCallback(opt.res);
@@ -71,11 +70,11 @@ var xkcd = (function() {
 	};
 
 	function bodyWriter(res, body) {
-		res.end(JSON.stringify(body));
+		res.json({ok: true, data: body});
 	};
 
 	function failWriter(res) {
-		res.end(errorJSON);
+		res.json({ok: false, errors: ['Failed to fetch Data from XKCD Server']});
 	};
 
 	//--------------------------------
@@ -83,7 +82,7 @@ var xkcd = (function() {
 	//--------------------------------
 	function getID(req, res) {
 		getURL({
-			id: req.params.id, // cache
+			id: req.params.id,
 			res: res,
 			url: base + '/' + req.params.id + infoPart,
 			successCallback: bodyWriter,
@@ -128,11 +127,11 @@ var xkcd = (function() {
 
 		models.User.query({where: {email: email}}).fetch().then(function(user) {
 			if(!user) {
-				res.end(JSON.stringify({ok: false, error: 'User ' + email + ' not found'}));
+				res.json({ok: false, error: 'User ' + email + ' not found'});
 				return;
 			}
       if(!user.isPasswordCorrect(password)) {
-        res.end(JSON.stringify({ok: false, error: 'Invalid password'}));
+        res.json({ok: false, error: 'Invalid password'});
         return;
       }
       req.session.user = user.publicAttributes();
@@ -148,26 +147,26 @@ var xkcd = (function() {
     return res.json({ok: false, errors: ['not implemented']});
 		//models.User.findOne(req.session.user.email, function(err, user) {
 			//if(err || !user) {
-				//return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+				//return res.json({ok: false, error: 'user not found'});
 			//}
-			//res.end(JSON.stringify(user.favorites_XKCD));
+			//res.json(user.favorites_XKCD);
 		//});
 	};
 
 	function addFavorite(req, res) {
 		if(!(req.session && req.session.user)) {
-			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+			return res.json({ok: false, error: 'not logged in'});
 		}
 		models.User.findOne(req.session.user.email, function(err, user) {
 			if(err || !user) {
-				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+				return res.json({ok: false, error: 'user not found'});
 			}
 			user.favorites_XKCD.addToSet(req.params.num);
 			user.save(function(err) {
 				if(err) {
-					res.end(JSON.stringify({ok: false, error: err}));
+					res.json({ok: false, error: err});
 				} else {
-					res.end(JSON.stringify({ok: true, added: req.params.num }));
+					res.json({ok: true, added: req.params.num});
 				}
 			});
 		});
@@ -175,18 +174,18 @@ var xkcd = (function() {
 
 	function delFavorite(req, res) {
 		if(!(req.session && req.session.user)) {
-			return res.end(JSON.stringify({ok: false, error: 'not logged in'}));
+			return res.json({ok: false, error: 'not logged in'});
 		}
 		models.User.findOne(req.session.user.email, function(err, user) {
 			if(err || !user) {
-				return res.end(JSON.stringify({ok: false, error: 'user not found'}));
+				return res.json({ok: false, error: 'user not found'});
 			}
 			user.favorites_XKCD.pull(req.params.num);
 			user.save(function(err) {
 				if(err) {
-					res.end(JSON.stringify({ok: false, error: err}));
+					res.json({ok: false, error: err});
 				} else {
-					res.end(JSON.stringify({ok: true, deleted: req.params.num }));
+					res.json({ok: true, deleted: req.params.num});
 				}
 			});
 		});
