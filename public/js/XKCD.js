@@ -403,6 +403,12 @@ XKCD.prototype.syncFavorites = function() {
   XKCD_Embedder.getJSON(self.serverURL + '/favorites',
     function success(resp) {
       console.log(logbase, 'resp = ', resp);
+      if(!resp.ok) {
+        var errorMessage = 'ERROR: ' + logbase + (resp.error || resp.errors.join(', '));
+        console.error(errorMessage);
+        alert(errorMessage);
+        return;
+      }
       /*
       var remoteFavorites = {};
       for(var i in favoriteList) {
@@ -688,12 +694,14 @@ XKCD.prototype.addToFavorites = function() {
 	if(self.user) {
 		XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/' + self.data.num, 
 		function succ(data) {
-			console.log('added remotely: ', data);
+			console.error('--- added remotely: ', data);
 			self.saveFavorites();
 		}, function fail() {
 			console.log('failed to add to favorites remotely');
 		});
-	}
+	} else {
+    console.error('--- NOT LOGGED IN!!! ---');
+  }
 	self.saveFavorites();
 	
 };

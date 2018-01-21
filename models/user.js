@@ -6,6 +6,10 @@ module.exports = function(sharedLibs, models) {
   protoProps.tableName = 'users';
   protoProps.hasTimestamps = true;
 
+  protoProps.favorites = function() {
+    return this.hasMany(models.Favorite);
+  };
+
   protoProps.isPasswordCorrect = function(password) {
     var self = this;
     return sharedLibs.bcrypt.compareSync(password, self.attributes.password_bcrypt);
