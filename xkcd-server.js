@@ -14,7 +14,6 @@ sharedLibs.promise = sharedLibs.promise || require('bluebird');
 
 var models = require('./models')(sharedLibs);
 
-
 var express = require('express');
 var request = require('request');
 var session = require('express-session');
@@ -157,38 +156,64 @@ var xkcd = (function() {
 		if(!(req.session && req.session.user)) {
 			return res.json({ok: false, error: 'not logged in'});
 		}
-		models.User.findOne(req.session.user.email, function(err, user) {
-			if(err || !user) {
-				return res.json({ok: false, error: 'user not found'});
-			}
-			user.favorites_XKCD.addToSet(req.params.num);
-			user.save(function(err) {
-				if(err) {
-					res.json({ok: false, error: err});
-				} else {
-					res.json({ok: true, added: req.params.num});
-				}
-			});
-		});
+    var num = req.params.num;
+    if(!num){
+      return res.json({ok: false, error: 'expecting param num as comic number'});
+    }
+    var user = res.locals.user;
+
+    models.Favorite.query({where: {user_id: user.id, comic_id_tmp: num}}).fetch().then(function(favExisting) {
+      if(favExisting) {
+        return res.json({ok: true, message: 'already a favorite. moot operation'});
+      }
+      var fav = new models.Favorite({user_id: user.id, comic_id_tmp: num});
+      models.Comic.query({where: {id: num}}).fetch().then(function(comic) {
+        if(!comic) {
+          return saveFav();
+        }
+        fav.set('comic_id', num);
+        saveFav();
+      });
+      function saveFav() {
+        fav.save().then(function() {
+          return res.json({ok: true, message: 'favorite added'});
+        });
+      }
+    });
+
+		//models.User.findOne(req.session.user.email, function(err, user) {
+			//if(err || !user) {
+				//return res.json({ok: false, error: 'user not found'});
+			//}
+			//user.favorites_XKCD.addToSet(req.params.num);
+			//user.save(function(err) {
+				//if(err) {
+					//res.json({ok: false, error: err});
+				//} else {
+					//res.json({ok: true, added: req.params.num});
+				//}
+			//});
+		//});
 	}
 
 	function delFavorite(req, res) {
 		if(!(req.session && req.session.user)) {
 			return res.json({ok: false, error: 'not logged in'});
 		}
-		models.User.findOne(req.session.user.email, function(err, user) {
-			if(err || !user) {
-				return res.json({ok: false, error: 'user not found'});
-			}
-			user.favorites_XKCD.pull(req.params.num);
-			user.save(function(err) {
-				if(err) {
-					res.json({ok: false, error: err});
-				} else {
-					res.json({ok: true, deleted: req.params.num});
-				}
-			});
-		});
+    return res.json({ok: false, error: 'not implemented'});
+		//models.User.findOne(req.session.user.email, function(err, user) {
+			//if(err || !user) {
+				//return res.json({ok: false, error: 'user not found'});
+			//}
+			//user.favorites_XKCD.pull(req.params.num);
+			//user.save(function(err) {
+				//if(err) {
+					//res.json({ok: false, error: err});
+				//} else {
+					//res.json({ok: true, deleted: req.params.num});
+				//}
+			//});
+		//});
 	}
 
 	function register(req, res) {
@@ -280,6 +305,20 @@ var xkcd = (function() {
 		}
 	}
 
+  function setUser(req, res, next) {
+    console.log('--- setUser --- req.path = ', req.path);
+    var suser = req.session.user;
+    if(!(suser && suser.email)) {
+      res.json({ok: false, error: 'Expecting logged in user'});
+      return;
+    }
+    models.User.query({where: {email: suser.email}}).fetch().then(function(user) {
+      console.log('--- user found. user = ', user);
+      res.locals.user = user;
+      next();
+    });
+  }
+
 	return {
 		getLatest: getLatest,
 		getID: getID,
@@ -288,6 +327,9 @@ var xkcd = (function() {
 		login: login,
 		logout: logout,
 		isLoggedIn: isLoggedIn,
+
+    setUser: setUser, 
+
     seeSession: seeSession,
 
 		getFavorites: getFavorites,
@@ -332,11 +374,26 @@ app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
 app.get('/logout', allowAccess, xkcd.logout);
 app.get('/isLoggedIn', allowAccess, xkcd.isLoggedIn);
-app.get('/seeSession', allowAccess, xkcd.seeSession);
-app.get('/favorites', allowAccess, xkcd.getFavorites);
-app.get('/favorites/add/:num(\\d+)', allowAccess, xkcd.addFavorite);
-app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.delFavorite);
 
-app.listen(app.get('port'), function() {
-	console.log('Listening on http://'+config.host.name+':' + config.host.port);
-});
+app.get('/seeSession', allowAccess, xkcd.setUser, xkcd.seeSession);
+app.get('/favorites', allowAccess, xkcd.setUser, xkcd.getFavorites);
+app.get('/favorites/add/:num(\\d+)', allowAccess, xkcd.setUser, xkcd.addFavorite);
+app.get('/favorites/del/:num(\\d+)', allowAccess, xkcd.setUser, xkcd.delFavorite);
+
+
+if(process.env.MODE == 'debug') {
+  console.log('--- DEBUG REPL ---');
+  var repl = require('repl');
+  var replServer = repl.start('> ');
+  var context = replServer.context;
+  context.models = models;
+
+  replServer.defineCommand('exit', function() {
+    process.exit(1);
+  });
+
+} else {
+	app.listen(app.get('port'), function() {
+		console.log('Listening on http://'+config.host.name+':' + config.host.port);
+	});	
+}

@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
     table.increments('id').primary();
     table.string('source');
     table.integer('xid');
-    table.jsonb('data');
+    table.json('data');
     table.timestamps();
   }).then();
 };
