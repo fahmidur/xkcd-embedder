@@ -1,21 +1,10 @@
-var sharedLibs = {};
-sharedLibs.pj = sharedLibs.pj || require('prettyjson');
-sharedLibs.fs = sharedLibs.fs || require('fs');
+var request = require('request');
 
-config = JSON.parse(sharedLibs.fs.readFileSync('config.json'));
-env = process.env.NODE_ENV || "development";
-config = config[env];
-console.log("config = \n---\n", sharedLibs.pj.render(config), "\n---\n");
-console.log("config.knex = \n---\n", sharedLibs.pj.render(config.knex), "\n---\n");
+var config = require('./config');
 
-sharedLibs.knex = sharedLibs.knex || require('knex')(config.knex);
-sharedLibs.bookshelf = sharedLibs.bookshelf || require('bookshelf')(sharedLibs.knex);
-sharedLibs.promise = sharedLibs.promise || require('bluebird');
-
-var models = require('./models')(sharedLibs);
+var models = require('./models');
 
 var express = require('express');
-var request = require('request');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var async = require('async');
@@ -386,6 +375,7 @@ if(process.env.MODE == 'debug') {
   var repl = require('repl');
   var replServer = repl.start('> ');
   var context = replServer.context;
+  context.config = config;
   context.models = models;
 
   replServer.defineCommand('exit', function() {

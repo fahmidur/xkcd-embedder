@@ -3,7 +3,7 @@ var fs = require('fs');
 var stream = require('stream');
 var readline = require('readline');
 
-module.exports = function(config, sharedLibs, models) {
+module.exports = function(config, models) {
   return function task(args, done) {
     console.log('--- populate_comics_from_file.js. args = ', args);
     var fpath = args[0];
