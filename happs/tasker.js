@@ -1,24 +1,10 @@
 #!/usr/bin/env node
+
 console.log('CURRENT_DIRECTORY = ', __dirname);
 console.log('PROCESS.cwd = ', process.cwd());
 
-//--- SETUP 'environment'
-var sharedLibs = {};
-sharedLibs.pj = sharedLibs.pj || require('prettyjson');
-sharedLibs.fs = sharedLibs.fs || require('fs');
-
-config = JSON.parse(sharedLibs.fs.readFileSync('./config.json'));
-env = process.env.NODE_ENV || "development";
-config = config[env];
-console.log("config = \n---\n", sharedLibs.pj.render(config), "\n---\n");
-console.log("config.knex = \n---\n", sharedLibs.pj.render(config.knex), "\n---\n");
-//---
-
-sharedLibs.knex = sharedLibs.knex || require('knex')(config.knex);
-sharedLibs.bookshelf = sharedLibs.bookshelf || require('bookshelf')(sharedLibs.knex);
-sharedLibs.promise = sharedLibs.promise || require('bluebird');
-
-var models = require('../models')(sharedLibs);
+var config = require('../config');
+var models = require('../models');
 
 console.log('------------------------------------');
 
@@ -44,7 +30,7 @@ console.log('taskArgs. taskArgs = ', taskArgs);
 console.log("Requesting Task: ", taskName);
 var taskFn = null;
 try {
-  taskFn = require("./tasks/"+taskName)(config, sharedLibs, models);
+  taskFn = require("./tasks/"+taskName)(config, models);
 } catch(err) {
   console.error("Error Fetching Task, err = ", err);
 }
