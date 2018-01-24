@@ -25,5 +25,8 @@
     "should": "^4.0.4",
     "sqlite3": "^3.1.13"
   },
+  "scripts": {
+    "test": "./run_tests"
+  },
   "engine": "node 0.10.29"
 }
