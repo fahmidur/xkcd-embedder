@@ -10,17 +10,35 @@ describe("Comic", function() {
     });
   });
 
-  /*
-  it("should be able to forge a new comic", function() {
-    console.log('--- config = ', config);
+  it("should be valid for valid comic", function(done) {
     var newComic = Comic.forge({
       xid: 99,
-      source: 'xkcd',
+      source: 'xkcd'
     });
     assert(newComic !== null);
-    console.log('newComic = ', newComic);
+    assert(newComic.isValid() === true);
+    done();
   });
-  */
+
+  it("should be invalid when source is missing", function(done) {
+    var newComic = Comic.forge({
+      xid: 99
+    });
+
+    assert(newComic !== null);
+    assert(newComic.isValid() === false);
+    assert(newComic.errors.source);
+
+    newComic.save().then(function() {
+      console.log('save() success. BAD');
+    }).catch(function() {
+      console.log('save() failure. GOOD');
+    }).finally(function() {
+      assert(!newComic.get('id'), "Expecting save() to fail BUT it succeeded");
+      done();
+    }).catch(done);
+
+  });
 
   it("should be able to fetch latest xkcd", function(done) {
     Comic.fetch('xkcd', 'latest', function(data) {

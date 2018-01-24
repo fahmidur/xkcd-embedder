@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 
-
 NODE_ENV=test knex migrate:latest
 NODE_ENV=test mocha --recursive test --exit
