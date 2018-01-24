@@ -10,10 +10,10 @@ classProps.fetchers.xkcd = function fetch_xkcd(ident, cbSuccess, cbFailure) {
   var url = 'http://xkcd.com/' + (ident == 'latest' ? '' : (ident+'/')) + 'info.0.json';
   request({url: url, json: true}, function(err, resp, body) {
     if(err || resp.statusCode !== 200) {
-      console.error('fetchers.xkcd. failure. err = ', errr, "\n---");
+      //console.error('fetchers.xkcd. failure. err = ', errr, "\n---");
       return cbFailure && cbFailure(err, resp);
     }
-    console.log('fetchers.xkcd. success. body = ', body, "\n---");
+    //console.log('fetchers.xkcd. success. body = ', body, "\n---");
     return cbSuccess && cbSuccess(body);
   });
 };
