@@ -6,6 +6,12 @@ var readline = require('readline');
 module.exports = function(config, models) {
   return function task(args, done) {
     console.log('--- populate_comics_from_file.js. args = ', args);
+
+    if(!args.length >= 1) {
+      console.error('Expecting filename as argument');
+      return done(1);
+    }
+
     var fpath = args[0];
     
     var istream = fs.createReadStream(fpath);
@@ -33,7 +39,7 @@ module.exports = function(config, models) {
             source: 'xkcd',
           });
         }
-        comic.set('data', obj);
+        comic.set('xdata', obj);
         console.log('=== calling save');
         comic.save().error(function(error) {
           console.error('--- on-error. error = ', error);
