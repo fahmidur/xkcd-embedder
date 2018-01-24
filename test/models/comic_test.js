@@ -28,6 +28,29 @@ describe("Comic", function() {
     assert(newComic !== null);
     assert(newComic.isValid() === false);
     assert(!!newComic.errors.source);
+    assert(newComic.errors.source.match(/missing/i));
+
+    newComic.save().then(function() {
+      console.log('save() success. BAD');
+    }).catch(function() {
+      console.log('save() failure. GOOD');
+    }).finally(function() {
+      assert(!newComic.get('id'), "Expecting save() to fail BUT it succeeded");
+      done();
+    }).catch(done);
+
+  });
+
+  it("should be invalid when source is unknown", function(done) {
+    var newComic = Comic.forge({
+      source: 'marmaduke',
+      xid: 99,
+    });
+
+    assert(newComic !== null);
+    assert(newComic.isValid() === false);
+    assert(!!newComic.errors.source);
+    assert(newComic.errors.source.match(/unknown/i));
 
     newComic.save().then(function() {
       console.log('save() success. BAD');
