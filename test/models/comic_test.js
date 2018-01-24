@@ -10,6 +10,11 @@ describe("Comic", function() {
     });
   });
 
+  it("should fail to create same comic", function(done) {
+    // TODO
+    done();
+  });
+
   it("should be valid for valid comic", function(done) {
     var newComic = Comic.forge({
       xid: 99,

@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('comics', function(table) {
     table.increments('id').primary();
     table.string('source');
-    table.integer('xid');
+    table.string('xid');
     table.json('xdata');
     table.timestamps();
 
