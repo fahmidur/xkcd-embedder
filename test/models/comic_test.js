@@ -4,7 +4,7 @@ var assert = chai.assert;
 var Comic = require('../../models/comic');
 
 describe("Comic", function() {
-  beforeEach(function(done) {
+  before(function(done) {
     Comic.where('id', '!=', '0').destroy().then(function() {
       done();
     });
@@ -17,7 +17,15 @@ describe("Comic", function() {
     });
     assert(newComic !== null);
     assert(newComic.isValid() === true);
-    done();
+
+    newComic.save().then(function() {
+
+    }).catch(function() {
+
+    }).finally(function() {
+      assert(newComic.get('id'));
+      done();
+    }).catch(done);
   });
 
   it("should be invalid when source is missing", function(done) {

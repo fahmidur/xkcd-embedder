@@ -4,8 +4,11 @@ exports.up = function(knex, Promise) {
     table.increments('id').primary();
     table.string('source');
     table.integer('xid');
-    table.json('data');
+    table.json('xdata');
     table.timestamps();
+
+    table.unique(['source', 'xid']);
+
   }).then();
 };
 

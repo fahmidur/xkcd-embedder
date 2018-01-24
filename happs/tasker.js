@@ -41,8 +41,11 @@ if(typeof taskFn !== 'function') {
 }
 
 console.log("Executing Task: ", taskName);
-taskFn(taskArgs, function() {
+taskFn(taskArgs, function(exitcode) {
+  exitcode = typeof exitcode === 'undefined' ? 0 : exitcode;
+
   console.log("******************");
   console.log("Task Complete");
-  process.exit(0);
+
+  process.exit(exitcode);
 });
