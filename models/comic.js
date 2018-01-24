@@ -59,8 +59,12 @@ protoProps.getErrors = function() {
   self.hasErrors = false;
 
   var attr;
-  
+
   attr = self.get('source');
+  if(!attr) {
+    self.errors.source = 'Missing source';
+  }
+  else
   if(!classProps.isKnownSource(attr)) {
     self.errors.source = 'Unknown source';
   }
