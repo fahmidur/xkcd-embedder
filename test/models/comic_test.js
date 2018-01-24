@@ -10,6 +10,7 @@ describe("Comic", function() {
     });
   });
 
+  /*
   it("should be able to forge a new comic", function() {
     console.log('--- config = ', config);
     var newComic = Comic.forge({
@@ -18,6 +19,17 @@ describe("Comic", function() {
     });
     assert(newComic !== null);
     console.log('newComic = ', newComic);
+  });
+  */
+
+  it("should be able to fetch latest xkcd", function(done) {
+    Comic.fetch('xkcd', 'latest', function(data) {
+      console.log('fetch xkcd success. data = ', data);
+      done();
+    }, function(err) {
+      console.error('fetch xkcd failured');
+      done();
+    });
   });
 
 
