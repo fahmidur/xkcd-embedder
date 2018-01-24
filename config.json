@@ -24,6 +24,31 @@
     },
     "hashes": ["fce3aaa5498fb2234f6464d1726c5b92", "4a2e1503b4668e4ccb017e7e6a9b8fd5"]
 	},
+	"test": {
+		"host": {
+			"name": "localhost",
+			"port": 4567
+		},
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "aab5ffbbfcd02c34afb12c4f4b219338",
+        "database": "xkcd_embedder_test_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
+      "migrations": {
+        "tableName": "knex_migrations"
+      }
+    },
+    "hashes": ["fce3aaa5498fb2234f6464d1726c5b92", "4a2e1503b4668e4ccb017e7e6a9b8fd5"]
+	},
 	"production": {
 		"host": {
 			"name": "xkcd-embedder.fahmidur.us",
