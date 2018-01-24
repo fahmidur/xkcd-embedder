@@ -27,7 +27,27 @@ describe("Comic", function() {
 
     assert(newComic !== null);
     assert(newComic.isValid() === false);
-    assert(newComic.errors.source);
+    assert(!!newComic.errors.source);
+
+    newComic.save().then(function() {
+      console.log('save() success. BAD');
+    }).catch(function() {
+      console.log('save() failure. GOOD');
+    }).finally(function() {
+      assert(!newComic.get('id'), "Expecting save() to fail BUT it succeeded");
+      done();
+    }).catch(done);
+
+  });
+
+  it("should be invalid when xid is missing", function(done) {
+    var newComic = Comic.forge({
+      source: 'xkcd'
+    });
+
+    assert(newComic !== null);
+    assert(newComic.isValid() === false);
+    assert(!!newComic.errors.xid);
 
     newComic.save().then(function() {
       console.log('save() success. BAD');
