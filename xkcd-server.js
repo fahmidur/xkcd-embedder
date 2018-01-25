@@ -22,7 +22,7 @@ app.use(session({
 }));
 
 app.use(function(req, res, next) {
-  console.log('--- session = ', (req.session));
+  //console.log('--- session = ', (req.session));
   next();
 });
 
@@ -151,11 +151,11 @@ var xkcd = (function() {
     }
     var user = res.locals.user;
 
-    models.Favorite.query({where: {user_id: user.id, comic_id_tmp: num}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_id_tmp: num}}).fetch().then(function(favExisting) {
       if(favExisting) {
         return res.json({ok: true, message: 'already a favorite. moot operation'});
       }
-      var fav = new models.Favorite({user_id: user.id, comic_id_tmp: num});
+      var fav = new models.Favorite({user_id: user.attributes.id, comic_id_tmp: num});
       models.Comic.query({where: {id: num}}).fetch().then(function(comic) {
         if(!comic) {
           return saveFav();
@@ -170,39 +170,26 @@ var xkcd = (function() {
       }
     });
 
-		//models.User.findOne(req.session.user.email, function(err, user) {
-			//if(err || !user) {
-				//return res.json({ok: false, error: 'user not found'});
-			//}
-			//user.favorites_XKCD.addToSet(req.params.num);
-			//user.save(function(err) {
-				//if(err) {
-					//res.json({ok: false, error: err});
-				//} else {
-					//res.json({ok: true, added: req.params.num});
-				//}
-			//});
-		//});
 	}
 
 	function delFavorite(req, res) {
 		if(!(req.session && req.session.user)) {
 			return res.json({ok: false, error: 'not logged in'});
 		}
-    return res.json({ok: false, error: 'not implemented'});
-		//models.User.findOne(req.session.user.email, function(err, user) {
-			//if(err || !user) {
-				//return res.json({ok: false, error: 'user not found'});
-			//}
-			//user.favorites_XKCD.pull(req.params.num);
-			//user.save(function(err) {
-				//if(err) {
-					//res.json({ok: false, error: err});
-				//} else {
-					//res.json({ok: true, deleted: req.params.num});
-				//}
-			//});
-		//});
+    var num = req.params.num;
+    if(!num){
+      return res.json({ok: false, error: 'expecting param num as comic number'});
+    }
+    var user = res.locals.user;
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_id: num}}).fetch().then(function(favExisting) {
+      if(!favExisting) {
+        res.json({ok: false, error: 'No such favorite'});
+        return;
+      }
+      favExisting.destroy().then(function() {
+        res.json({ok: true, message: 'favorite deleted'});
+      });
+    });
 	}
 
 	function register(req, res) {
