@@ -6,6 +6,8 @@ var models = require('./models');
 
 var express = require('express');
 var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+
 var bodyParser = require('body-parser');
 var async = require('async');
 
@@ -13,11 +15,15 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
 
+var redisStoreOptions = config.redis;
+redisStoreOptions.prefix += 'sess:';
+
 app.use(session({
   name: 'xkcd_embedder.sid',
+  store: new RedisStore(config.redis),
   secret: config.hashes.join(''),
-  saveUninitialized: false, // Do not save sessions that are new but not modified
-  resave: true, // Do not write session back to Redis if it did not change
+  saveUninitialized: false, 
+  resave: true, 
   rolling: true,
 }));
 

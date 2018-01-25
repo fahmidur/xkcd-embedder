@@ -10,4 +10,8 @@ if(!config) {
 console.log("config = \n---\n", pj.render(config), "\n---\n");
 console.log("config.knex = \n---\n", pj.render(config.knex), "\n---\n");
 
+if(config.redis) {
+  config.redis.prefix = 'xemb:' + env + ':';
+}
+
 module.exports = config;
