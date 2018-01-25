@@ -27,10 +27,12 @@ app.use(session({
   rolling: true,
 }));
 
+/*
 app.use(function(req, res, next) {
   //console.log('--- session = ', (req.session));
   next();
 });
+*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -294,14 +296,12 @@ var xkcd = (function() {
 	}
 
   function setUser(req, res, next) {
-    console.log('--- setUser --- req.path = ', req.path);
     var suser = req.session.user;
     if(!(suser && suser.email)) {
       res.json({ok: false, error: 'Expecting logged in user'});
       return;
     }
     models.User.query({where: {email: suser.email}}).fetch().then(function(user) {
-      console.log('--- user found. user = ', user);
       res.locals.user = user;
       next();
     });
