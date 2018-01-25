@@ -10,7 +10,7 @@
 }
 .xkcd-embed-bottom {
 	display: block;
-	background-color: rgba(120,100,0,0.2);
+  background-color: rgba(120,100,0,0.2);
 	margin-top:5px;
 	text-align: center;
 }
@@ -81,6 +81,11 @@ a.xkcd-embed-title {
 	text-align: center;
 	display: none;
 	overflow: auto;
+}
+.xkcd-embed-favoritesWindow h1 {
+  color: #fff;
+  text-align: center;
+  margin-top: 2em;
 }
 .xkcd-embed-userDivWrapper {
 	min-height:10px;
