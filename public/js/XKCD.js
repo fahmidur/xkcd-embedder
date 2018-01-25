@@ -486,28 +486,26 @@ XKCD.prototype.regAction = function(e) {
 XKCD.prototype.loginAction = function(e) {
 	console.log('logging in...');
 	var self = this;
-	console.log(self);
+  var logbase = self.logbase + 'loginAction. ';
+  console.log(logbase);
 	XKCD_Embedder.postJSON(self.serverURL + '/login', {
 		email: self.c.loginEmail.value,
 		password: self.c.loginPassword.value
 	},
 	function success(data) {
 		console.log('success! data = ', data);
-		if(data.ok) {
-			self.c.logoutLink.textContent = 'Logout ' + data.user.email;
-
-			self.c.loginDiv.style.display = 'none';
-			self.c.logoutDiv.style.display = 'block';
-
-			self.fetchFavorites();
-		} else {
+    if(!(data.ok && data.user)) {
 			self.c.loginPassword.value = '';
 			self.c.loginPassword.focus();
       alert('Access denied');
-		}
+      return;
+    }
+    self.user = data.user;
+    self.fetchFavorites();
+    self.updateUserDiv();
 	}, 
 	function failure() {
-		console.log('failure!');
+		console.log(logbase, 'failure!');
 	});
 };
 XKCD.prototype.goTo = function(id, noHistory) {
@@ -628,17 +626,18 @@ XKCD.prototype.searchXKCDs = function(q) {
 		}
 	}
 	else {
-		console.log('HERE');
-		for(var k in self.favorites) {
-			favorite = self.favorites[k];
-			if(favorite.title.match(searchRegex)) {
-				favoriteResults[k] = favorite;
-			}
-			// else
-			// if(favorite.transcript.match(searchRegex)) {
-			// 	favoriteResults[k] = favorite;	
-			// }
-		}
+    for(var k in self.favorites) {
+      favorite = self.favorites[k];
+      if(favorite.title.match(searchRegex)) {
+        favoriteResults[k] = favorite;
+      }
+      //else
+      //if(favorite.transcript.match(searchRegex)) {
+        //favoriteResults[k] = favorite;	
+      //}
+      // Above is commented out because it causes UI confusion
+      // Searching on what cannot be seen
+    }
 	}
 	
 	console.log('RESULTS = ', favoriteResults);
@@ -652,7 +651,7 @@ XKCD.prototype.delFavorite = function(id) {
   self.favorites = self.favorites || {};
 
   if(!self.user) {
-    console.log('btRemove. No user. removing locally only');
+    console.log(logbase, 'No user. Removing only from localStorage');
     delete self.favorites[id];
     self.saveFavorites();
     self.renderFavorites();
