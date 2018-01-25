@@ -1,22 +1,24 @@
 var XKCD = function(element, serverURL) {
-  this.logbase = 'XKCD. ';
+  var self = this;
 
-	this.countID = ++XKCD.count;
-	this.element = element;
-	this.data = null;
-	this.dataset = element.dataset;
-	this.serverURL = serverURL;
-	this.url = serverURL + '/' + this.dataset.id;
-	this.c = {};
-	this.historyStack = new Array();
-	this.forwardStack = new Array();
-	this.favorites = {};
-	this.favoriteResults = {};
-	this.user = null;
+  self.logbase = 'XKCD. ';
 
-  this.loginEnabled = true;
+	self.countID = ++XKCD.count;
+	self.element = element;
+	self.data = null;
+	self.dataset = element.dataset;
+	self.serverURL = serverURL;
+	self.url = serverURL + '/' + self.dataset.id;
+	self.c = {};
+	self.historyStack = new Array();
+	self.forwardStack = new Array();
+	self.favorites = self.getFavorites();
+	self.favoriteResults = {};
+	self.user = null;
 
-	this.render();
+  self.loginEnabled = true;
+
+	self.render();
 };
 XKCD.prototype.render = function() {
 	var self = this;
@@ -357,17 +359,17 @@ XKCD.prototype.render = function() {
 		});
 
 		btFavorite.addEventListener('click', function(e) {
-			self.addToFavorites();
+			self.addFavorite();
 		});
 
 		btListFavorites.addEventListener('click', function(e) {
 			self.favoriteResults = {};
 			self.c.input.value = "";
 			if(self.user) {
-				self.syncFavorites();
-			}
-			self.getFavorites();
-			self.renderFavorites();
+				self.fetchFavorites();
+			} else {
+        self.renderFavorites();
+      }
 			favoritesWindow.style.display = 'block';
 		});
 
@@ -391,61 +393,28 @@ XKCD.prototype.evLoginToReg = function() {
   self.c.loginDiv.style = 'display:none';
   self.c.regDiv.style = 'display:block';
 };
-XKCD.prototype.syncFavorites = function() {
+XKCD.prototype.fetchFavorites = function() {
   var self = this;
-  var logbase = self.logbase + 'syncFavorites. ';
+  var logbase = self.logbase + 'fetchFavorites. ';
 
-  console.log(logbase, 'FETCHING MY REMOTE FAVORITES...');
+  console.log(logbase, 'FETCHING REMOTE FAVORITES...');
 
-  self.favorites = self.getFavorites();
   XKCD_Embedder.getJSON(self.serverURL + '/favorites',
     function success(resp) {
       console.log(logbase, 'resp = ', resp);
-      if(!resp.ok) {
+      if(!(resp.ok && resp.favorites)) {
         var errorMessage = 'ERROR: ' + logbase + (resp.error || resp.errors.join(', '));
         console.error(errorMessage);
         return;
       }
-      /*
-      var remoteFavorites = {};
-      for(var i in favoriteList) {
-        var favoriteNum = favoriteList[i];
-
-        remoteFavorites[favoriteNum] = true; // set
-        if(self.favorites[favoriteNum]) { continue; }
-        console.log('Favorite('+favoriteNum+') FETCHING...');
-        XKCD_Embedder.getJSON(self.serverURL + '/' + favoriteNum,
-        function succ(data) {
-          self.favorites[data.num] = data;
-          console.log('** New remote favorite('+favoriteNum+'): ', data);
-        },
-        function err() {
-          console.error('** New remote favorite('+favoriteNum+'): ', faves[k], 'could not be fetched');
-        });
-      }
-      // console.log('self.favorites = ', self.favorites);
-      // console.log('remoteFavorites = ', remoteFavorites);
-      for(var k in self.favorites) {
-        if(remoteFavorites[k]) { continue; }
-        XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/'+k, 
-        function succ(data) {
-          console.log(data);
-        }, 
-        function() {
-          console.log('error adding ' + k + ' to remote');
-        });
-      }
-      */
-
+      self.favorites = resp.favorites;
+      self.favoriteResults = {};
+      self.renderFavorites();
     },
     function failure() {
       console.log('failed to get favorites');
     }
   );
-
-	self.favoriteResults = {};
-	self.saveFavorites();
-	self.renderFavorites();
 };
 XKCD.prototype.updateUserDiv = function() {
 	var self = this;
@@ -466,7 +435,7 @@ XKCD.prototype.checkLoginState = function() {
       console.log('checkLoginState. IS logged in');
       self.user = data.user;
       self.updateUserDiv();
-      self.syncFavorites();
+      self.fetchFavorites();
     } else {
       console.log('checkLoginState. NOT logged in');
       self.user = null;
@@ -478,16 +447,19 @@ XKCD.prototype.checkLoginState = function() {
 };
 XKCD.prototype.logoutAction = function(e) {
 	var self = this;
-	XKCD_Embedder.getJSON(self.serverURL + '/logout', 
-	function success(data) {
-		console.log('Logout! ', data);
-		self.user = null;
-	},
-	function failure() {
-		console.log('failed to logout');
-	});
-
-	self.updateUserDiv();
+	XKCD_Embedder.getJSON(
+    self.serverURL + '/logout', 
+    function success(data) {
+      console.log('Logout! ', data);
+      self.user = null;
+      self.favorites = self.getFavorites();
+      self.renderFavorites();
+      self.updateUserDiv();
+    },
+    function failure() {
+      console.log('failed to logout');
+    }
+  );
 };
 XKCD.prototype.regAction = function(e) {
   var self = this;
@@ -527,7 +499,7 @@ XKCD.prototype.loginAction = function(e) {
 			self.c.loginDiv.style.display = 'none';
 			self.c.logoutDiv.style.display = 'block';
 
-			self.syncFavorites();
+			self.fetchFavorites();
 		} else {
 			self.c.loginPassword.value = '';
 			self.c.loginPassword.focus();
@@ -625,25 +597,7 @@ XKCD.prototype.renderFavorites = function() {
 			var id = this.parentNode.dataset.id;
 			console.log('btRemove. id =', id);
       preventGo(e);
-
-      if(!self.user) {
-        console.log('btRemove. No user. removing locally only');
-        delete self.favorites[id];
-        self.saveFavorites();
-        return;
-      }
-
-      console.log('btRemove. REMOTE. Removing from account. ');
-
-      XKCD_Embedder.getJSON(
-        self.serverURL + '/favorites/del/'+id,
-        function succ(data) {
-          console.log('btRemove. REMOTE. Delete success. data = ', data);
-        },
-        function err() {
-          console.error('btRemove. REMOTE. Delete failed.');
-        }
-      );
+      self.delFavorite(id);
 		});
 	} // end-for
 
@@ -690,8 +644,41 @@ XKCD.prototype.searchXKCDs = function(q) {
 	console.log('RESULTS = ', favoriteResults);
 	self.favoriteResults = favoriteResults;
 };
-XKCD.prototype.addToFavorites = function() {
+
+XKCD.prototype.delFavorite = function(id) {
+  var self = this;
+
+  var logbase = self.logbase + 'delFavorite. ';
+  self.favorites = self.favorites || {};
+
+  if(!self.user) {
+    console.log('btRemove. No user. removing locally only');
+    delete self.favorites[id];
+    self.saveFavorites();
+    self.renderFavorites();
+    return;
+  }
+
+  console.log(logbase, 'REMOTE. Removing from account. ');
+
+  XKCD_Embedder.getJSON(
+    self.serverURL + '/favorites/del/'+id,
+    function succ(data) {
+      console.log(logbase, 'REMOTE. Delete success. data = ', data);
+      delete self.favorites[id];
+      self.renderFavorites();
+    },
+    function err() {
+      console.error(logbase, 'REMOTE. Delete failed.');
+    }
+  );
+};
+
+XKCD.prototype.addFavorite = function() {
 	var self = this;
+
+  var logbase = self.logbase + 'addFavorite. ';
+  self.favorites = self.favorites || {};
   
   if(!self.user) {
     self.favorites[self.data.num] = self.data;
@@ -700,41 +687,48 @@ XKCD.prototype.addToFavorites = function() {
     return;
   }
 
-  XKCD_Embedder.getJSON(self.serverURL + '/favorites/add/' + self.data.num, 
-  function succ(data) {
-    console.error('--- added remotely: ', data);
-    self.saveFavorites();
-    alert('Added comic #' + self.data.num + ' to your favorites (in your account)');
-  }, function fail() {
-    console.log('failed to add to favorites remotely');
-    alert('ERROR. Failed to add comic #' + self.data.num + ' to your remote favorites.');
-  });
+  XKCD_Embedder.getJSON(
+    self.serverURL + '/favorites/add/' + self.data.num, 
+    function succ(data) {
+      console.error(logbase, 'RESP. added remotely: ', data);
+      self.favorites[data.num] = data;
+      alert('Added comic #' + self.data.num + ' to your favorites (in your account)');
+    }, function fail() {
+      console.log(logbase, 'failed to add to favorites remotely');
+      alert('ERROR. Failed to add comic #' + self.data.num + ' to your remote favorites.');
+    }
+  );
 };
+
 XKCD.prototype.getFavorites = function() {
 	var self = this;
+  var logbase = self.logbase + 'getFavorites. ';
 	if(typeof(Storage) === "undefined") {
-		console.log("getFavorites. type of Storage undefined")
-		self.favorites = {};
+		console.log(logbase, "Unsupported localStorage")
+    return {};
 	}
-	else {
-		console.log('** getFavorites. Fetching favorites from localStore. ');
-		self.favorites = JSON.parse(localStorage.getItem('favorites')) || {};
-		console.log("** getFavorites. Fetched favorites: ", self.favorites);
-	}
-	return self.favorites;
+  console.log(logbase, 'Fetching favorites from localStore. ');
+  var favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+  console.log("** getFavorites. Fetched favorites: ", favorites);
+	return favorites;
 };
+
 XKCD.prototype.saveFavorites = function() {
 	var self = this;
+  var logbase = self.logbase + 'saveFavorites. ';
 
-  if(self.user) {
-    console.log('saveFavorites. self.user present, no need to save.');
+	if(typeof(Storage) === "undefined") {
+    console.error(logbase, 'Unsupported localStorage');
     return;
   }
 
-	if(typeof(Storage) !== "undefined") {
-		console.log('** Saving favorites to localStore');
-		localStorage.setItem('favorites', JSON.stringify(self.favorites));
-	}
+  if(self.user) {
+    console.log(logbase, 'self.user present. No need to save to localStorage.');
+    return;
+  }
+
+  console.log(logbase, 'saving favorites to localStore');
+  localStorage.setItem('favorites', JSON.stringify(self.favorites));
 };
 XKCD.count = 0;
 
