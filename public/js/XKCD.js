@@ -86,44 +86,49 @@ XKCD.prototype.render = function() {
 		var btBack = document.createElement('button');
 		btBack.className = 'xkcd-embed-bt xkcd-embed-btBack';
 		btBack.textContent = '<-';
-		btBack.title = 'Go Back';
+		btBack.title = 'Go Back (In History)';
 		bottom.appendChild(btBack);
 		self.c.btBack = btBack;
 
 		var btEarliest = document.createElement('button');
 		btEarliest.className = 'xkcd-embed-bt xkcd-embed-btEarliest';
 		btEarliest.textContent = "|<";
+    btEarliest.title = 'Go To Earliest Comic';
 		bottom.appendChild(btEarliest);
 		self.c.btEarliest = btEarliest;
 
 		var btPrev = document.createElement('button');
 		btPrev.className = 'xkcd-embed-bt xkcd-embed-btPrev';
 		btPrev.textContent = "<";
+    btPrev.title = 'Go To Previous Comic';
 		bottom.appendChild(btPrev);
 		self.c.btPrev = btPrev;
 
 		var btRandom = document.createElement('button');
 		btRandom.className = 'xkcd-embed-bt xkcd-embed-btRandom';
 		btRandom.textContent = "random";
+    btRandom.title = 'Go To A Random Comic';
 		bottom.appendChild(btRandom);
 		self.c.btRandom = btRandom;
 
 		var btNext = document.createElement('button');
 		btNext.className = 'xkcd-embed-bt xkcd-embed-btNext';
 		btNext.textContent = ">";
+    btNext.title = 'Go To Next Comic';
 		bottom.appendChild(btNext);
 		self.c.btNext = btNext;
 
 		var btLatest = document.createElement('button');
 		btLatest.className = 'xkcd-embed-bt xkcd-embed-btLatest';
 		btLatest.textContent = ">|";
+    btLatest.title = 'Go To Latest Comic';
 		bottom.appendChild(btLatest);
 		self.c.btLatest = btLatest;
 
 		var btForward = document.createElement('button');
 		btForward.className = 'xkcd-embed-bt xkcd-embed-btForward';
 		btForward.textContent = '->';
-		btForward.title = 'Go Forward';
+		btForward.title = 'Go Forward (In History)';
 		bottom.appendChild(btForward);
 		self.c.btForward = btForward;
 
