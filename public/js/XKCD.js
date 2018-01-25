@@ -543,16 +543,19 @@ XKCD.prototype.renderFavorites = function() {
 	var input = self.c.input;
 
 	input.focus();	
-	setTimeout(function() {
-		input.focus()	
-	}, 200);
-	setTimeout(function() {
-		input.focus()	
-	}, 250);
+	setTimeout(function() { input.focus(); }, 200);
+	setTimeout(function() { input.focus(); }, 250);
 
 	var donotGo = false;
 
-	var favorites = self.favorites;
+	var favorites = self.favorites || {};
+  
+  if(Object.keys(favorites).length === 0) {
+    var noFaves = document.createElement('h1');
+    noFaves.textContent = 'You Have No Favorites';
+    favoritesWrapper.append(noFaves);
+  }
+
 	var favoriteResultsLength = Object.keys(self.favoriteResults).length;
 	if(favoriteResultsLength > 0) {
 		favorites = self.favoriteResults;
@@ -575,7 +578,6 @@ XKCD.prototype.renderFavorites = function() {
 		var title = document.createElement('span');
 		title.textContent = data.title;
 		favoriteElement.appendChild(title);
-
 
 		var number = document.createElement('span');
 		number.className = 'xkcd-embed-number';
