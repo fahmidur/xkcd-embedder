@@ -554,6 +554,7 @@ XKCD.prototype.renderFavorites = function() {
     var noFaves = document.createElement('h1');
     noFaves.textContent = 'You Have No Favorites';
     favoritesWrapper.append(noFaves);
+    self.favoriteResults = {};
   }
 
 	var favoriteResultsLength = Object.keys(self.favoriteResults).length;
