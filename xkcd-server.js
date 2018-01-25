@@ -133,7 +133,15 @@ var xkcd = (function() {
 			return res.json({ok: false, errors: ['not logged in']});
 		}
     var user = res.locals.user;
-    models.Favorite.query({where: {user_id: user.attributes.id}}).fetchAll().then(function(favorites) {
+    models.Comic.query(function(qb) {
+      qb.innerJoin('favorites', 'favorites.comic_id', 'comics.id');
+      qb.where('favorites.user_id', '=', user.attributes.id);
+    }).fetchAll().then(function(comics) {
+      var favorites = {};
+      comics.map(function(comic) {
+        var xdata = comic.attributes.xdata;
+        favorites[xdata.num] = xdata;
+      });
       res.json({ok: true, favorites: favorites});
     });
 	};
@@ -148,16 +156,16 @@ var xkcd = (function() {
     }
     var user = res.locals.user;
 
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_id_tmp: num}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
       if(favExisting) {
         return res.json({ok: true, message: 'already a favorite. moot operation'});
       }
-      var fav = new models.Favorite({user_id: user.attributes.id, comic_id_tmp: num});
-      models.Comic.query({where: {id: num}}).fetch().then(function(comic) {
+      var fav = new models.Favorite({user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'});
+      models.Comic.query({where: {xid: num, source: 'xkcd'}}).fetch().then(function(comic) {
         if(!comic) {
           return saveFav();
         }
-        fav.set('comic_id', num);
+        fav.set('comic_id', comic.id);
         saveFav();
       });
       function saveFav() {
@@ -178,11 +186,12 @@ var xkcd = (function() {
       return res.json({ok: false, error: 'expecting param num as comic number'});
     }
     var user = res.locals.user;
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_id: num}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
       if(!favExisting) {
         res.json({ok: false, error: 'No such favorite'});
         return;
       }
+      console.log('------------------- favExisting = ', favExisting);
       favExisting.destroy().then(function() {
         res.json({ok: true, message: 'favorite deleted'});
       });

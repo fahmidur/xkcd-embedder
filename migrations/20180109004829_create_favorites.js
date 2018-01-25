@@ -4,7 +4,8 @@ exports.up = function(knex, Promise) {
     table.timestamps();
     table.integer('user_id').references('users.id');
     table.integer('comic_id').references('comics.id');
-    table.integer('comic_id_tmp');
+    table.string('comic_xid');
+    table.string('comic_source');
   }).then();
 };
 

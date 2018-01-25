@@ -52,8 +52,16 @@ module.exports = function(config, models) {
           console.error('=== on-catch. error = ', error);
         }).finally(function() {
           console.log('saveComic. done saving. comic.xid = ', comic.get('xid'));
-          cb();
+          updateFavorites(comic, cb);
         });
+      });
+    }
+
+    function updateFavorites(comic, cb) {
+      var attr = comic.attributes;
+      knex.raw("update favorites set comic_id = "+(attr.id)+" where comic_xid::integer = "+(attr.xid)+" AND comic_source = 'xkcd'").then(function(r) {
+        console.log('=== updated favorites');
+        cb();
       });
     }
 
