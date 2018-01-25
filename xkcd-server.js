@@ -132,13 +132,10 @@ var xkcd = (function() {
 		if(!(req.session && req.session.user)) {
 			return res.json({ok: false, errors: ['not logged in']});
 		}
-    return res.json({ok: false, errors: ['not implemented']});
-		//models.User.findOne(req.session.user.email, function(err, user) {
-			//if(err || !user) {
-				//return res.json({ok: false, error: 'user not found'});
-			//}
-			//res.json(user.favorites_XKCD);
-		//});
+    var user = res.locals.user;
+    models.Favorite.query({where: {user_id: user.attributes.id}}).fetchAll().then(function(favorites) {
+      res.json({ok: true, favorites: favorites});
+    });
 	};
 
 	function addFavorite(req, res) {

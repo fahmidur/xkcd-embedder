@@ -694,7 +694,6 @@ XKCD.prototype.addToFavorites = function() {
 	var self = this;
   
   if(!self.user) {
-    console.error('--- NOT LOGGED IN!!! ---');
     self.favorites[self.data.num] = self.data;
     self.saveFavorites();
     alert('Added comic #' + self.data.num + ' to your Local favorites (in this browser)');
