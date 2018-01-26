@@ -12,6 +12,9 @@ var RedisStore = require('connect-redis')(session);
 var bodyParser = require('body-parser');
 var async = require('async');
 
+var tasks = {};
+tasks.xkcd_fetch_comics = require('./happs/tasks/xkcd_fetch_comics')(config, models);
+
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
@@ -28,8 +31,32 @@ app.use(session({
   rolling: true,
 }));
 
+var maybeSyncComics = (function() { 
+  var synced_ts = null;
+
+  var expo = {};
+  var THRESH = 5 * 60 * 1000; // 5 Minutes
+  var logbase = 'maybeSyncComics. '
+
+  expo.middleware = function(next) {
+    var clogbase = logbase + 'middleware. ';
+    console.log(logbase, '--- --- Maybe Syncing --- ---');
+    var now_ts = (new Date).valueOf();
+    if(now_ts - synced_ts > THRESH) {
+      console.log(logbase, '--- --- THRESH EXCEEDED. SYNCING COMICS ---');
+      return tasks.xkcd_fetch_comics([], function() {
+        synced_ts = (new Date).valueOf();
+        next();
+      });
+    }
+    console.log(logbase, '--- --- STILL WITHIN SYNC THRESHOLD ---');
+    next();
+  };
+
+  return expo;
+})();
+
 app.use(function(req, res, next) {
-  //console.log("session = \n---\n"+(req.session)+"\n---\n");
   next();
 });
 
@@ -302,7 +329,7 @@ var xkcd = (function() {
     }
     models.User.query({where: {email: suser.email}}).fetch().then(function(user) {
       res.locals.user = user;
-      next();
+      return maybeSyncComics.middleware(next);
     });
   }
 
