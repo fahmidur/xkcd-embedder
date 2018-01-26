@@ -91,53 +91,47 @@ var xkcd = (function() {
 		});
 	};
 
-	function bodyWriter(res, body) {
-		res.json({ok: true, data: body});
-	};
+  function cachingFetch(ident, res) {
 
-	function failWriter(res) {
-		res.json({ok: false, errors: ['Failed to fetch Data from XKCD Server']});
-	};
+  }
 
 	//--------------------------------
 	// PUBLIC
 	//--------------------------------
 	function getID(req, res) {
-		getURL({
-			id: req.params.id,
-			res: res,
-			url: base + '/' + req.params.id + infoPart,
-			successCallback: bodyWriter,
-			failureCallback: failWriter
-		});
+    models.Comic.fetch(
+      'xkcd', 
+      req.params.id, 
+      function(data) { res.json({ok: true, data: data});                      }, 
+      function(e, r) { res.json({ok: false, error: 'Failed to fetch comic'}); },
+    );
 	};
 
 	function getLatest(req, res) {
-		getURL({
-			res: res,
-			url: latestURL,
-			successCallback: bodyWriter,
-			failureCallback: failWriter
-		});
+    models.Comic.fetch(
+      'xkcd', 
+      'latest', 
+      function(data) { res.json({ok: true, data: data});                      }, 
+      function(e, r) { res.json({ok: false, error: 'Failed to fetch comic'}); },
+    );
 	};
 
 	function getRandom(req, res) {
-		getURL({
-			res: res,
-			url: latestURL,
-			successCallback: function(res2, body) {
-				var latestNum = body.num;
-				var randomID = ~~(Math.random() * latestNum)+1;
-				getURL({
-					id: randomID, //cache
-					res: res,
-					url: base + '/' + randomID + infoPart,
-					successCallback: bodyWriter,
-					failureCallback: failWriter
-				});
-			},
-			failureCallback: failWriter
-		});	
+    models.Comic.fetch(
+      'xkcd', 
+      'latest',
+      function(d1) {
+        var latest_xid = d1.num;
+        var random_xid = Math.floor(Math.random() * latest_xid)+1;
+        models.Comic.fetch(
+          'xkcd',
+          random_xid,
+          function(d2)   { res.json({ok: true, data: d2}); },
+          function(e, r) { res.json({ok: false, error: 'Failed to fetch random_xid = '+random_xid}); },
+        );
+      }, 
+      function(e, r) { res.json({ok: false, error: 'Failed to fetch latest'}); },
+    );
 	}
 
 	function login(req, res) {
