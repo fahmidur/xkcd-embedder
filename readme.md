@@ -11,7 +11,7 @@ The usage is quite simple.
 
 ### Setup
 
-In your header place add the stylesheet:
+In your header add the stylesheet:
 
 ```html
 <link rel='stylesheet' href='http://xkcd-embedder.fahmidur.us/css/xkcd-embedder.css'/>
