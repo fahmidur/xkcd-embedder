@@ -92,28 +92,30 @@ var xkcd = (function() {
 	};
 
   function cachingFetch(ident, res) {
-
+    ident = String(ident);
+    if(!(ident.match(/^\d+$/) || ident === 'latest')) {
+      res.json({ok: false, error: 'Invalid identifier'});
+      return;
+    }
+    models.Comic.fetch(
+      'xkcd',
+      ident,
+      function(data) {
+        res.json({ok: true, data: data});
+      },
+      function(e, r) { res.json({ok: false, error: 'Failed to fetch comic'}); }
+    );
   }
 
 	//--------------------------------
 	// PUBLIC
 	//--------------------------------
 	function getID(req, res) {
-    models.Comic.fetch(
-      'xkcd', 
-      req.params.id, 
-      function(data) { res.json({ok: true, data: data});                      }, 
-      function(e, r) { res.json({ok: false, error: 'Failed to fetch comic'}); },
-    );
+    return cachingFetch(req.params.id, res);
 	};
 
 	function getLatest(req, res) {
-    models.Comic.fetch(
-      'xkcd', 
-      'latest', 
-      function(data) { res.json({ok: true, data: data});                      }, 
-      function(e, r) { res.json({ok: false, error: 'Failed to fetch comic'}); },
-    );
+    return cachingFetch('latest', res);
 	};
 
 	function getRandom(req, res) {
@@ -123,12 +125,7 @@ var xkcd = (function() {
       function(d1) {
         var latest_xid = d1.num;
         var random_xid = Math.floor(Math.random() * latest_xid)+1;
-        models.Comic.fetch(
-          'xkcd',
-          random_xid,
-          function(d2)   { res.json({ok: true, data: d2}); },
-          function(e, r) { res.json({ok: false, error: 'Failed to fetch random_xid = '+random_xid}); },
-        );
+        return cachingFetch(random_xid, res);
       }, 
       function(e, r) { res.json({ok: false, error: 'Failed to fetch latest'}); },
     );
@@ -378,6 +375,7 @@ app.use('/css', allowAccess, express.static(__dirname + '/public/css'));
 app.get('/latest', allowAccess, xkcd.getLatest);
 app.get('/random', allowAccess, xkcd.getRandom);
 app.get('/:id(\\d+)', allowAccess, xkcd.getID);
+
 app.post('/register', allowAccess, xkcd.register);
 app.post('/login', allowAccess, xkcd.login);
 app.get('/logout', allowAccess, xkcd.logout);
