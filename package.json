@@ -9,7 +9,6 @@
     "body-parser": "^1.5.2",
     "bookshelf": "^0.10.4",
     "chai": "^4.1.2",
-    "connect-mongo": "^0.4.1",
     "connect-redis": "^3.3.3",
     "cookie-session": "^2.0.0-alpha.1",
     "crypto": "0.0.3",
