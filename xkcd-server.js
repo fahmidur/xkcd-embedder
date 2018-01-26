@@ -1,4 +1,5 @@
 var request = require('request');
+var prettyjson = require('prettyjson');
 
 var config = require('./config');
 
@@ -27,12 +28,10 @@ app.use(session({
   rolling: true,
 }));
 
-/*
 app.use(function(req, res, next) {
-  //console.log('--- session = ', (req.session));
+  //console.log("session = \n---\n"+(req.session)+"\n---\n");
   next();
 });
-*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
