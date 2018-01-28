@@ -10,7 +10,7 @@
 }
 .xkcd-embed-bottom {
 	display: block;
-	background-color: rgba(120,100,0,0.2);
+  background-color: rgba(120,100,0,0.2);
 	margin-top:5px;
 	text-align: center;
 }
@@ -82,6 +82,11 @@ a.xkcd-embed-title {
 	display: none;
 	overflow: auto;
 }
+.xkcd-embed-favoritesWindow h1 {
+  color: #fff;
+  text-align: center;
+  margin-top: 2em;
+}
 .xkcd-embed-userDivWrapper {
 	min-height:10px;
 	overflow: auto;
@@ -94,13 +99,30 @@ a.xkcd-embed-title {
 	padding-top: 5px;
 	overflow: auto;
 }
+.xkcd-embed-userDiv form {
+  display: block;
+  border: 0px solid red;
+  margin: 0px;
+  padding: 0px;
+  overflow: auto;
+}
+.xkcd-embed-userDiv a.toggle {
+  float: right;
+  margin: 0px;
+  margin-left: 1em;
+  color: #fff;
+  padding: 3px;
+  font-size: x-small;
+  user-select: none;
+}
 .xkcd-embed-userDiv > div {
 	display: block;
 	float: left;
 }
 .xkcd-embed-link {
 	font-weight: bold;
-	color: #2d2d2d;
+	/*color: #2d2d2d;*/
+  color: #fff;
 	font-size: 10px;
 	cursor: pointer;
 }
