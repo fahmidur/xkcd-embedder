@@ -5,11 +5,7 @@ A small bit of JS for embedding XKCDs. Embed the latest XKCD, a particular XKCD,
 
 For sample usage see [xkcd-embedder.fahmidur.us](http://xkcd-embedder.fahmidur.us)
 
-## Usage
-
-The usage is quite simple.
-
-### Setup
+## Setup
 
 In your header add the stylesheet:
 
@@ -22,7 +18,7 @@ At the end of your body place:
 <script src='http://xkcd-embedder.fahmidur.us/js/xkcd-embedder.js'></script>
 ```
 
-### Normal Usage
+## Usage
 
 For the latest XKCD:
 ```html
@@ -39,7 +35,12 @@ For a random XKCD:
 <div class='xkcd-embed' data-id='random'></div>
 ```
 
-#### You can also set the maxWidth if you need it.
+**You can also set the maxWidth if you need it.**
+
 ```html
 <div class='xkcd-embed' data-id='random' data-maxWidth='400px'></div>
 ```
+
+## Dependencies
+
+None. This widget was designed to be embedded into someone else's webpage and it wouldn't be nice to impose any dependencies on the user's page.
