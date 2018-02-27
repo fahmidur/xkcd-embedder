@@ -44,7 +44,7 @@ For a random XKCD:
 
 ## Dependencies
 
-None. This widget was designed to be embedded into someone else's webpage and it wouldn't be nice to impose any dependencies on the user's page.
+None. This widget was designed to be embedded into someone else's webpage and it wouldn't be nice to impose any dependencies on the host page.
 
 ![Screenshot when embedded](https://raw.githubusercontent.com/fahmidur/xkcd-embedder/master/screenshots/ss001.png)
 
