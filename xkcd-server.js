@@ -7,6 +7,8 @@ var models = require('./models');
 
 var express = require('express');
 var session = require('express-session');
+var redis   = require('redis');
+var redisClient = redis.createClient(config.redis);
 var RedisStore = require('connect-redis')(session);
 
 var bodyParser = require('body-parser');
@@ -24,7 +26,7 @@ redisStoreOptions.prefix += 'sess:';
 
 app.use(session({
   name: 'xkcd_embedder.sid',
-  store: new RedisStore(config.redis),
+  store: new RedisStore({client: redisClient}),
   secret: config.hashes.join(''),
   saveUninitialized: false, 
   resave: true, 
@@ -181,7 +183,7 @@ var xkcd = (function() {
     }
     var user = res.locals.user;
 
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch({require:false}).then(function(favExisting) {
       if(favExisting) {
         return res.json({ok: true, message: 'already a favorite. moot operation'});
       }
@@ -211,7 +213,7 @@ var xkcd = (function() {
       return res.json({ok: false, error: 'expecting param num as comic number'});
     }
     var user = res.locals.user;
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch({require:false}).then(function(favExisting) {
       if(!favExisting) {
         res.json({ok: false, error: 'No such favorite'});
         return;
@@ -318,7 +320,7 @@ var xkcd = (function() {
       res.json({ok: false, error: 'Expecting logged in user'});
       return;
     }
-    models.User.query({where: {email: suser.email}}).fetch().then(function(user) {
+    models.User.query({where: {email: suser.email}}).fetch({require:false}).then(function(user) {
       res.locals.user = user;
       return maybeSyncComics.middleware(next);
     });
