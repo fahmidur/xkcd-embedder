@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
 rsync -e "ssh" -avrzu --exclude 'node_modules' --delete ./ root@lsd:/var/www/xkcd-embedder
+rsync -e "ssh" -avrzu --exclude 'node_modules' --delete ./ root@lsd-2:/srv/xkcd-embedder
