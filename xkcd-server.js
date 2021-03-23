@@ -360,6 +360,21 @@ function allowAccess(req, res, next) {
 // 	next();
 // });
 
+
+app.get('/.well-known/acme-challenge/:token', function(req, res) {
+  var log_prefix = 'acme.';
+  var rkey = 'ACME:'+req.params.token;
+  console.log(log_prefix, 'redis.get('+rkey+') = ... ');
+  redisClient.get(rkey, function(err, token) {
+    if(err) {
+      res.end('ERROR');
+      return;
+    }
+    console.log(log_prefix, 'redis.get('+rkey+') =', token);
+    res.end(token||'NULL'); 
+  });
+});
+
 // The seqCap routes
 app.get('/seqCap/fetch', allowAccess, seqCap.fetch);
 app.post('/seqCap/check', allowAccess, seqCap.check);
