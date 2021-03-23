@@ -21,8 +21,8 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
 
-var redisStoreOptions = config.redis;
-redisStoreOptions.prefix += 'sess:';
+//var redisStoreOptions = config.redis;
+//redisStoreOptions.prefix += 'sess:';
 
 app.use(session({
   name: 'xkcd_embedder.sid',
@@ -365,13 +365,13 @@ app.get('/.well-known/acme-challenge/:token', function(req, res) {
   var log_prefix = 'acme.';
   var rkey = 'ACME:'+req.params.token;
   console.log(log_prefix, 'redis.get('+rkey+') = ... ');
-  redisClient.get(rkey, function(err, token) {
+  redisClient.get(rkey, function(err, reply) {
     if(err) {
       res.end('ERROR');
       return;
     }
-    console.log(log_prefix, 'redis.get('+rkey+') =', token);
-    res.end(token||'NULL'); 
+    console.log(log_prefix, 'redis.get('+rkey+') =', reply);
+    res.end(reply||'NULL'); 
   });
 });
 
