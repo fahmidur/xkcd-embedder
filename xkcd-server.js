@@ -418,6 +418,6 @@ if(process.env.MODE == 'debug') {
 
 } else {
 	app.listen(app.get('port'), function() {
-		console.log('Listening on http://'+config.host.name+':' + config.host.port);
+		console.log('Listening on http://'+config.host.name+':' + app.get('port'));
 	});	
 }

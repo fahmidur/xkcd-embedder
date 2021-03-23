@@ -14,4 +14,7 @@ console.log("config.knex = \n---\n", pj.render(config.knex), "\n---\n");
   //config.redis.prefix = 'xemb:' + env + ':';
 //}
 
+var port = config.host.port;
+config.host.xurl = '//'+config.host.name+( (port == 80 || port == 443) ? '' : ':'+port )
+
 module.exports = config;
