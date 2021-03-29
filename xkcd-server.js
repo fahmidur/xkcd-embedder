@@ -31,6 +31,10 @@ app.use(session({
   saveUninitialized: false, 
   resave: true, 
   rolling: true,
+  cookie: {
+    sameSite: 'none',
+    secure: true,
+  }
 }));
 
 var maybeSyncComics = (function() { 
