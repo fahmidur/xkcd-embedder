@@ -33,7 +33,7 @@ a.xkcd-embed-title {
 	display: inline-block;
 	float: left;
 	font-weight: bold;
-	font-family: Monospace;
+	font-family: monospace;
 	font-size: 14px;
 	padding-bottom:5px;
 	text-decoration: none;
@@ -134,12 +134,10 @@ a.xkcd-embed-title {
 	border: 0px solid red;
 	outline: none;
 	border-radius: 0px;
-	/*background-color: rgba(0,0,0,0.5);*/
 	background-color: rgba(255,255,255,0.8);
 	color: #111;
 	padding: 3px;
 	font-size: 10px;
-	/*font-size: 17px;*/
 }
 .xkcd-embed-userDiv-btn {
 	float: left;
@@ -147,7 +145,6 @@ a.xkcd-embed-title {
 	padding: 0px;
 	padding:3px;
 	font-size: 10px;
-	/*font-size: 17px;*/
 	border: 0px solid red;
 	background-color: rgba(250,150,0, 0.9);
 	color: #2d2d2d;
@@ -163,7 +160,6 @@ a.xkcd-embed-title {
 	color: white;
 }
 .xkcd-embed-favoritesWindow-favoritesWrapper {
-	/*border:1px solid red;*/
 	margin: 0 auto;
 }
 .xkcd-embed-favoriteElement {
