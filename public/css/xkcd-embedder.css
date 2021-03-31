@@ -218,3 +218,7 @@ a.xkcd-embed-title {
 	outline: none;
 	font-size:17px;
 }
+.xkcd-embed-comic img {
+  max-width: 100%;
+  max-height: 100%;
+}
