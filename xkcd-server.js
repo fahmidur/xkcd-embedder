@@ -364,6 +364,12 @@ function allowAccess(req, res, next) {
 // 	next();
 // });
 
+/**
+ * Used as health endpoint by uptime service.
+ */
+app.get('/api/v1/ping(.json)?', function(req, res) {
+  res.json({ok: true, now: (new Date())});
+});
 
 app.get('/.well-known/acme-challenge/:token', function(req, res) {
   var log_prefix = 'acme.';
