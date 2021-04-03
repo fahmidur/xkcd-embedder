@@ -3,14 +3,16 @@
 	border: 1px solid gray;
 	padding:5px;
 	margin: 5px;
-	background-color: rgba(100,120,0,0.2);
+	/*background-color: rgba(100,120,0,0.2);*/
+  background-color: #E0E4CC;
 }
 .xkcd-embed-top {
 	display: block;
 }
 .xkcd-embed-bottom {
 	display: block;
-  background-color: rgba(120,100,0,0.2);
+  /*background-color: rgba(120,100,0,0.2);*/
+  background-color: #E0E4CC;
 	margin-top:5px;
 	text-align: center;
 }
