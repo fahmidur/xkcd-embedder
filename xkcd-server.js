@@ -349,7 +349,10 @@ var xkcd = (function() {
 	};
 })();
 
-app.set('port', 4567);
+var port = parseInt(process.env.PORT || '4567');
+app.set('port', port);
+var bind = process.env.BIND || '127.0.0.1';
+app.set('bind', bind);
 
 function allowAccess(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -427,7 +430,7 @@ if(process.env.MODE == 'debug') {
   });
 
 } else {
-	app.listen(app.get('port'), function() {
-		console.log('Listening on http://'+config.host.name+':' + app.get('port'));
+	app.listen(app.get('port'), app.get('bind'), function() {
+		console.log('Listening on http://'+app.get('bind')+':' + app.get('port'));
 	});	
 }
