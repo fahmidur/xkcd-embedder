@@ -141,7 +141,8 @@ XKCD.prototype.render = function() {
 
 		var btListFavorites = document.createElement('button');
 		btListFavorites.className = 'xkcd-embed-bt xkcd-embed-btListFavorites';
-		btListFavorites.innerHTML = '&#9776;';
+		//btListFavorites.innerHTML = '&#9776;';
+    btListFavorites.innerHTML = '=';
 
 		btListFavorites.title = 'List Favorites';
 		bottom.appendChild(btListFavorites);
