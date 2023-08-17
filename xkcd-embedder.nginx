@@ -55,24 +55,24 @@ server {
 	}
 }
 
-# server {
-#   listen 443 ssl;
-#   server_name xkcd-embedder.fahmidur.com;
-#   ssl_certificate /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/fullchain.pem;
-#   ssl_certificate_key /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/privkey.pem;
-# 
-#   location / {
-#     proxy_set_header   Host $host;
-#     proxy_set_header   X-Real-IP $remote_addr;
-#     proxy_redirect     off;
-#     proxy_set_header   Upgrade    $http_upgrade;
-#     proxy_set_header   Connection "upgrade";
-#     proxy_http_version 1.1;
-#     proxy_buffering    off;
-#     proxy_cache_bypass $http_pragma $http_authorization;
-#     proxy_no_cache     $http_pragma $http_authorization;
-# 
-#     proxy_pass http://xkcd_embedder_backend;
-#   }
-# }
+server {
+  listen 443 ssl;
+  server_name xkcd-embedder.fahmidur.com;
+  ssl_certificate /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/privkey.pem;
+
+  location / {
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_redirect     off;
+    proxy_set_header   Upgrade    $http_upgrade;
+    proxy_set_header   Connection "upgrade";
+    proxy_http_version 1.1;
+    proxy_buffering    off;
+    proxy_cache_bypass $http_pragma $http_authorization;
+    proxy_no_cache     $http_pragma $http_authorization;
+
+    proxy_pass http://xkcd_embedder_backend;
+  }
+}
 
