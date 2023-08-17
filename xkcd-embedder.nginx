@@ -5,8 +5,7 @@ upstream xkcd_embedder_backend {
 #################################################
 # Old fahmidur.us Server
 # This server is marked-for-expiration
-# because .us TLDs do not allow WHOIS Guard
-# AND require correct address/phone-number.
+# because .us TLDs do not allow WHOIS Guard.
 #################################################
 
 server {

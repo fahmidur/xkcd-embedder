@@ -3,7 +3,7 @@ XKCD Embedder
 
 A small bit of JS for embedding XKCDs. Embed the latest XKCD, a particular XKCD, or a random XKCD.
 
-For sample usage see [xkcd-embedder.fahmidur.us](http://xkcd-embedder.fahmidur.us)
+For sample usage see [xkcd-embedder.fahmidur.com](http://xkcd-embedder.fahmidur.com)
 
 
 ## Setup
@@ -11,12 +11,12 @@ For sample usage see [xkcd-embedder.fahmidur.us](http://xkcd-embedder.fahmidur.u
 In your header add the stylesheet:
 
 ```html
-<link rel='stylesheet' href='http://xkcd-embedder.fahmidur.us/css/xkcd-embedder.css'/>
+<link rel='stylesheet' href='http://xkcd-embedder.fahmidur.com/css/xkcd-embedder.css'/>
 ```
 
 At the end of your body place:
 ```html
-<script src='http://xkcd-embedder.fahmidur.us/js/xkcd-embedder.js'></script>
+<script src='http://xkcd-embedder.fahmidur.com/js/xkcd-embedder.js'></script>
 ```
 
 ## Usage
