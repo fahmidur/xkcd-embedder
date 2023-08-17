@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
-rsync -e "ssh" -avrzu --exclude 'node_modules' --delete ./ root@lsd:/var/www/xkcd-embedder
+
+# The DO Droplet 'lsd' was destroyed.
+# rsync -e "ssh" -avrzu --exclude 'node_modules' --delete ./ root@lsd:/var/www/xkcd-embedder
+
+# This is the latest server which hosts this project.
 rsync -e "ssh" -avrzu --exclude 'node_modules' --delete ./ root@lsd-2:/srv/xkcd-embedder
