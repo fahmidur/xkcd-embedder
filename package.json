@@ -25,6 +25,7 @@
     "should": "*"
   },
   "scripts": {
+    "start": "node xkcd-server.js",
     "test": "./run_tests"
   }
 }
