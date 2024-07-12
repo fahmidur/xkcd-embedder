@@ -1,0 +1,89 @@
+{
+	"development": {
+		"host": {
+			"name": "localhost",
+			"port": 4567
+		},
+    "redis": {
+      "host": "localhost",
+      "port": 6379
+    },
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "<YOUR_PASSWORD_HERE>",
+        "database": "xkcd_embedder_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
+      "migrations": {
+        "tableName": "knex_migrations"
+      }
+    },
+    "hashes": ["<SESSION_HASH_1>", "<SESSION_HASH_2>"]
+	},
+	"test": {
+		"host": {
+			"name": "localhost",
+			"port": 4567
+		},
+    "redis": {
+      "host": "localhost",
+      "port": 6379
+    },
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "<YOUR_PASSWORD_HERE>",
+        "database": "xkcd_embedder_test_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
+      "migrations": {
+        "tableName": "knex_migrations"
+      }
+    },
+    "hashes": ["<SESSION_HASH_1>", "<SESSION_HASH_2>"]
+	},
+	"production": {
+		"host": {
+			"name": "xkcd-embedder.fahmidur.com",
+			"port": 80
+		},
+    "redis": {
+      "host": "localhost",
+      "port": 6379
+    },
+    "knex": {
+      "debug": true,
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "user": "xkcd_embedder_user001",
+        "password": "<YOUR_PASSWORD_HERE>",
+        "database": "xkcd_embedder_001",
+        "charset": "utf8"
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      },
+      "migrations": {
+        "tableName": "knex_migrations"
+      }
+    },
+    "hashes": ["<SESSION_HASH_1>", "<SESSION_HASH_2>"]
+	}
+}
