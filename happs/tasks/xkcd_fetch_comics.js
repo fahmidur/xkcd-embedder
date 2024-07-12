@@ -38,7 +38,7 @@ module.exports = function(config, models) {
 
     function saveComic(obj, cb) {
       console.log('=== SAVING. obj.num = ', obj.num);
-      models.Comic.where({xid: obj.num, source: 'xkcd'}).fetch().then(function(comic) {
+      models.Comic.where({xid: obj.num, source: 'xkcd'}).fetch({require:false}).then(function(comic) {
         if(!comic) {
           comic = models.Comic.forge({
             xid: obj.num,

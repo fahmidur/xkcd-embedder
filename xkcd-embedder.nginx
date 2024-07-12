@@ -1,6 +1,13 @@
 upstream xkcd_embedder_backend {
     server 127.0.0.1:4567;
 }
+
+#################################################
+# Old fahmidur.us Server
+# This server is marked-for-expiration
+# because .us TLDs do not allow WHOIS Guard.
+#################################################
+
 server {
 	listen 80;
 	server_name xkcd-embedder.fahmidur.us;
@@ -10,3 +17,61 @@ server {
 		proxy_pass http://xkcd_embedder_backend;
 	}
 }
+
+server {
+  listen 443 ssl;
+  server_name xkcd-embedder.fahmidur.us;
+  ssl_certificate /etc/letsencrypt/live/xkcd-embedder.fahmidur.us/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/xkcd-embedder.fahmidur.us/privkey.pem;
+
+  location / {
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_redirect     off;
+    proxy_set_header   Upgrade    $http_upgrade;
+    proxy_set_header   Connection "upgrade";
+    proxy_http_version 1.1;
+    proxy_buffering    off;
+    proxy_cache_bypass $http_pragma $http_authorization;
+    proxy_no_cache     $http_pragma $http_authorization;
+
+    proxy_pass http://xkcd_embedder_backend;
+  }
+}
+
+#################################################
+# New fahmidur.com Server 
+# As of 2023-08-08
+#################################################
+
+server {
+	listen 80;
+	server_name xkcd-embedder.fahmidur.com;
+	charset UTF-8;
+
+	location / {
+		proxy_pass http://xkcd_embedder_backend;
+	}
+}
+
+server {
+  listen 443 ssl;
+  server_name xkcd-embedder.fahmidur.com;
+  ssl_certificate /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/xkcd-embedder.fahmidur.com/privkey.pem;
+
+  location / {
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_redirect     off;
+    proxy_set_header   Upgrade    $http_upgrade;
+    proxy_set_header   Connection "upgrade";
+    proxy_http_version 1.1;
+    proxy_buffering    off;
+    proxy_cache_bypass $http_pragma $http_authorization;
+    proxy_no_cache     $http_pragma $http_authorization;
+
+    proxy_pass http://xkcd_embedder_backend;
+  }
+}
+

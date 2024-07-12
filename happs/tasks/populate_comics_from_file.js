@@ -32,7 +32,7 @@ module.exports = function(config, models) {
     var finished_timeout = null;
 
     function saveComic(obj) {
-      models.Comic.where({xid: obj.num, source: 'xkcd'}).fetch().then(function(comic) {
+      models.Comic.where({xid: obj.num, source: 'xkcd'}).fetch({require: false}).then(function(comic) {
         if(!comic) {
           comic = models.Comic.forge({
             xid: obj.num,

@@ -7,6 +7,8 @@ var models = require('./models');
 
 var express = require('express');
 var session = require('express-session');
+var redis   = require('redis');
+var redisClient = redis.createClient(config.redis);
 var RedisStore = require('connect-redis')(session);
 
 var bodyParser = require('body-parser');
@@ -19,16 +21,20 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './');
 
-var redisStoreOptions = config.redis;
-redisStoreOptions.prefix += 'sess:';
+//var redisStoreOptions = config.redis;
+//redisStoreOptions.prefix += 'sess:';
 
 app.use(session({
   name: 'xkcd_embedder.sid',
-  store: new RedisStore(config.redis),
+  store: new RedisStore({client: redisClient}),
   secret: config.hashes.join(''),
   saveUninitialized: false, 
   resave: true, 
   rolling: true,
+  cookie: {
+    sameSite: 'none',
+    secure: true,
+  }
 }));
 
 var maybeSyncComics = (function() { 
@@ -181,7 +187,7 @@ var xkcd = (function() {
     }
     var user = res.locals.user;
 
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch({require:false}).then(function(favExisting) {
       if(favExisting) {
         return res.json({ok: true, message: 'already a favorite. moot operation'});
       }
@@ -211,7 +217,7 @@ var xkcd = (function() {
       return res.json({ok: false, error: 'expecting param num as comic number'});
     }
     var user = res.locals.user;
-    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch().then(function(favExisting) {
+    models.Favorite.query({where: {user_id: user.attributes.id, comic_xid: num, comic_source: 'xkcd'}}).fetch({require:false}).then(function(favExisting) {
       if(!favExisting) {
         res.json({ok: false, error: 'No such favorite'});
         return;
@@ -318,7 +324,7 @@ var xkcd = (function() {
       res.json({ok: false, error: 'Expecting logged in user'});
       return;
     }
-    models.User.query({where: {email: suser.email}}).fetch().then(function(user) {
+    models.User.query({where: {email: suser.email}}).fetch({require:false}).then(function(user) {
       res.locals.user = user;
       return maybeSyncComics.middleware(next);
     });
@@ -343,7 +349,10 @@ var xkcd = (function() {
 	};
 })();
 
-app.set('port', 4567);
+var port = parseInt(process.env.PORT || '4567');
+app.set('port', port);
+var bind = process.env.BIND || '127.0.0.1';
+app.set('bind', bind);
 
 function allowAccess(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -357,6 +366,27 @@ function allowAccess(req, res, next) {
 // 	// console.log('SESSION = \n', req.session);
 // 	next();
 // });
+
+/**
+ * Used as health endpoint by uptime service.
+ */
+app.get('/api/v1/ping(.json)?', function(req, res) {
+  res.json({ok: true, now: (new Date())});
+});
+
+app.get('/.well-known/acme-challenge/:token', function(req, res) {
+  var log_prefix = 'acme.';
+  var rkey = 'ACME:'+req.params.token;
+  console.log(log_prefix, 'redis.get('+rkey+') = ... ');
+  redisClient.get(rkey, function(err, reply) {
+    if(err) {
+      res.end('ERROR');
+      return;
+    }
+    console.log(log_prefix, 'redis.get('+rkey+') =', reply);
+    res.end(reply||'NULL'); 
+  });
+});
 
 // The seqCap routes
 app.get('/seqCap/fetch', allowAccess, seqCap.fetch);
@@ -400,7 +430,7 @@ if(process.env.MODE == 'debug') {
   });
 
 } else {
-	app.listen(app.get('port'), function() {
-		console.log('Listening on http://'+config.host.name+':' + config.host.port);
+	app.listen(app.get('port'), app.get('bind'), function() {
+		console.log('Listening on http://'+app.get('bind')+':' + app.get('port'));
 	});	
 }
